@@ -11,8 +11,8 @@ bind9:
     - name: /etc/named.conf
     - source: salt://bind/files/named.conf
     - user: root
-    - group: root
-    - mode: 644
+    - group: named
+    - mode: 640
     - require:
       - pkg: bind9
   service.running:
