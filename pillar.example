@@ -1,0 +1,13 @@
+bind:
+  lookup:
+    pkgs:
+      - bind
+    service:
+      - named
+
+bind:
+  config:
+    tmpl: salt://bind/files/named.conf
+    user: root
+    group: named
+    mode: 640

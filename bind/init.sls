@@ -1,22 +1,10 @@
-bind9:
-  pkg.installed:
-    {% if grains['os_family'] == 'Debian' %}
-    - pkgs:
-      - bind9
-      - bind9-doc
-      - bind9utils
-    {% else %}
-    - name: bind
-  file.managed:
-    - name: /etc/named.conf
-    - source: salt://bind/files/named.conf
-    - user: root
-    - group: named
-    - mode: 640
-    - require:
-      - pkg: bind9
-  service.running:
-    - name: named
+{% from "bind/map.jinja" import map with context %}
+
+bind:
+  pkg:
+    - installed
+    - pkgs: {{ map.pkgs|json }}
+  service:
+    - running
+    - name: {{ map.service }}
     - enable: True
-    - watch:
-      - file: bind9

@@ -1,0 +1,14 @@
+{% set map = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['bind9', 'bind9utils'],
+        'service': 'named',
+
+        'config': '/etc/named.conf',
+    },
+    'RedHat': {
+        'pkgs': ['bind'],
+        'service': 'named',
+
+        'config': '/etc/named.conf',
+    },
+}, merge=salt['pillar.get']('bind:lookup')) %}
