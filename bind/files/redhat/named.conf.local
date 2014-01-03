@@ -1,0 +1,21 @@
+//
+// Do any local configuration here
+//
+
+{% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
+{%- set file = salt['pillar.get']("available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("available_zones:" + key + ":masters") %}
+  zone "{{ key }}" {
+    type {{ args['type'] }};
+    file "data/{{ file }}";
+    {% if args['type'] == "master" -%}
+      {% if args['notify'] -%}
+    notify yes;
+      {% else -%}
+    notify no;
+      {%- endif %}
+    {% else -%}
+    masters { {{ masters }} };
+    {%- endif %}
+  };
+{% endfor %}

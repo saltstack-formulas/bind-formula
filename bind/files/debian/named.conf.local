@@ -1,0 +1,30 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+{% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
+{%- set file = salt['pillar.get']("available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("available_zones:" + key + ":masters") %}
+zone "{{ key }}" {
+  type {{ args['type'] }};
+  file "zones/{{ file }}";
+  {% if args['type'] == "master" -%}
+    {% if args['notify'] -%}
+  notify yes;
+    {% else -%}
+  notify no;
+    {%- endif -%}
+  {% else -%}
+  masters { {{ masters }} };
+  {%- endif %}
+};
+{% endfor %}
+
+logging {
+  channel "querylog" { file "/var/log/bind9/query.log"; print-time yes; };
+  category queries { querylog; };
+};
