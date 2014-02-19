@@ -39,9 +39,11 @@ bind_local_config:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
+    - watch_in:
+      - service: bind
 {% endif %}
 
-{% if grains['os'] == 'Debian' %}
+{% if grains['os_family'] == 'Debian' %}
 bind_local_config:
   file:
     - managed
@@ -53,6 +55,8 @@ bind_local_config:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
+    - watch_in:
+      - service: bind
 
 bind_options_config:
   file:
@@ -65,6 +69,8 @@ bind_options_config:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
+    - watch_in:
+      - service: bind
 
 bind_default_zones:
   file:
@@ -77,6 +83,8 @@ bind_default_zones:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
+    - watch_in:
+      - service: bind
 {% endif %}
 
 {% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
