@@ -41,7 +41,7 @@ bind_local_config:
       - pkg: bind
 {% endif %}
 
-{% if grains['os'] == 'Debian' %}
+{% if grains['os_family'] == 'Debian' %}
 bind_local_config:
   file:
     - managed
