@@ -3,13 +3,24 @@
 include:
   - bind
 
+named_directory:
+  file.directory:
+    - name: {{ map.named_directory }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
+    - mode: 775
+    - makedirs: True
+    - require:
+      - pkg: bind
+
+{% if grains['os_family'] == 'RedHat' %}
 bind_config:
   file:
     - managed
     - name: {{ map.config }}
-    - source: {{ salt['pillar.get']('bind:config:tmpl', 'salt://bind/files/named.conf') }}
+    - source: 'salt://bind/files/redhat/named.conf'
     - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user ) }}
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
     - require:
@@ -17,41 +28,44 @@ bind_config:
     - watch_in:
       - service: bind
 
-named_directory:
-  file.directory:
-    - name: {{ map.named_directory }}
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: 775
-    - makedirs: True
-    - require:
-      - pkg: bind
-
-{% if grains['os_family'] == 'RedHat' %}
 bind_local_config:
   file:
     - managed
     - name: {{ map.local_config }}
     - source: 'salt://bind/files/redhat/named.conf.local'
     - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
     - watch_in:
-      - service: bind
+      - service: named
 {% endif %}
 
 {% if grains['os_family'] == 'Debian' %}
+bind_config:
+  file:
+    - managed
+    - name: {{ map.config }}
+    - source: 'salt://bind/files/debian/named.conf'
+    - template: jinja
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
+    - require:
+      - pkg: bind
+    - watch_in:
+      - service: bind
+
 bind_local_config:
   file:
     - managed
     - name: {{ map.local_config }}
     - source: 'salt://bind/files/debian/named.conf.local'
     - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
@@ -64,8 +78,8 @@ bind_options_config:
     - name: {{ map.options_config }}
     - source: 'salt://bind/files/debian/named.conf.options'
     - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
@@ -78,13 +92,20 @@ bind_default_zones:
     - name: {{ map.default_zones_config }}
     - source: 'salt://bind/files/debian/named.conf.default-zones'
     - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', 'root') }}
-    - group: {{ salt['pillar.get']('bind:config:group', 'bind') }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
     - watch_in:
       - service: bind
+
+/var/log/bind9:
+  file:
+    - directory
+    - user: root
+    - group: bind
+    - mode: 775
 {% endif %}
 
 {% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
@@ -95,12 +116,22 @@ zones-{{ file }}:
     - managed
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://bind/zones/{{ file }}'
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - user: {{ salt['pillar.get']('bind:config:user', 'map.user') }}
+    - group: {{ salt['pillar.get']('bind:config:group', 'map.group') }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - watch_in:
       - service: bind
     - require:
       - file: {{ map.named_directory }}
+
+{% if args['dnssec'] is defined and args['dnssec'] -%}
+signed-{{file}}:
+  cmd.run:
+    - cwd: {{ map.named_directory }}
+    - name: zonesigner -zone {{ key }} {{ file }}
+    - prereq:
+      - file: zones-{{ file }}
+{% endif %}
+
 {% endif %}
 {% endfor %}

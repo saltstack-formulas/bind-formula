@@ -8,7 +8,7 @@
         'default_zones_config': '/etc/bind/named.conf.default-zones',
         'named_directory': '/var/cache/bind/zones',
         'user': 'root',
-        'group': 'bind',
+        'group': 'bind'
     },
     'RedHat': {
         'pkgs': ['bind'],
@@ -17,6 +17,6 @@
         'local_config': '/etc/named.conf.local',
         'named_directory': '/var/named/data',
         'user': 'root',
-        'group': 'named',
+        'group': 'named'
     },
 }, merge=salt['pillar.get']('bind:lookup')) %}

@@ -19,6 +19,7 @@ zone "{{ key }}" {
   notify no;
     {%- endif -%}
   {% else -%}
+  notify no;
   masters { {{ masters }} };
   {%- endif %}
 };
