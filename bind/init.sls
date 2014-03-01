@@ -8,3 +8,4 @@ bind:
     - running
     - name: {{ map.service }}
     - enable: True
+    - reload: True
