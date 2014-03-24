@@ -7,4 +7,5 @@
     copytruncate
     compress
     create 0664 bind root
+    su
 }
