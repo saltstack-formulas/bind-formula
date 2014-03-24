@@ -106,6 +106,16 @@ bind_default_zones:
     - user: root
     - group: bind
     - mode: 775
+    - template: jinja
+
+
+/etc/logrotate.d/bind9:
+  file:
+    - managed
+    - source: salt://bind/files/debian/logrotate_bind
+    - user: root
+    - group: root
+
 {% endif %}
 
 {% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
