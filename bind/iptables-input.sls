@@ -26,6 +26,18 @@ udp:
     - proto: udp
     - save: True
 
+query.reponses:
+  iptables.insert:
+    - table: filter
+    - position: 1
+    - chain: bind.input
+    - jump: ACCEPT
+    - match: state
+    - state: RELATED,ESTABLISHED
+    - sport: 53
+    - proto: udp
+    - save: True
+
 filter:
   iptables.insert:
     - table: filter
