@@ -16,8 +16,8 @@ tcp:
 
 udp:
   iptables.insert:
-    - position: 1
     - table: filter
+    - position: 1
     - chain: bind.input
     - jump: ACCEPT
     - match: state
@@ -28,8 +28,8 @@ udp:
 
 filter:
   iptables.insert:
-    - position: 1
     - table: filter
+    - position: 1
     - chain: INPUT
     - jump: bind.input
     - save: True
