@@ -33,7 +33,7 @@ query.reponses:
     - chain: bind.input
     - jump: ACCEPT
     - match: state
-    - state: RELATED,ESTABLISHED
+    - connstate: RELATED,ESTABLISHED
     - sport: 53
     - proto: udp
     - save: True
