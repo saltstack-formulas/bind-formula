@@ -5,6 +5,7 @@ bind.input:
 tcp:
   iptables.insert:
     - table: filter
+    - position: -1
     - chain: bind.input
     - jump: ACCEPT
     - match: state
@@ -15,7 +16,7 @@ tcp:
 
 udp:
   iptables.insert:
-    - position: 0
+    - position: -1
     - table: filter
     - chain: bind.input
     - jump: ACCEPT
@@ -27,7 +28,7 @@ udp:
 
 filter:
   iptables.insert:
-    - position: 0
+    - position: -1
     - table: filter
     - chain: INPUT
     - jump: bind.input
