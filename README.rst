@@ -25,7 +25,8 @@ Install the bind package and start the bind service.
 
 Manage the bind configuration file.
 
-Example Pillar:
+Example Pillar
+==============
 
 .. code:: yaml
 
