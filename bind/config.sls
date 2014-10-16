@@ -58,6 +58,20 @@ bind_config:
     - watch_in:
       - service: bind
 
+bind_key_config:
+  file:
+    - managed
+    - name: {{ map.key_config }}
+    - source: 'salt://bind/files/debian/named.conf.key'
+    - template: jinja
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - require:
+      - pkg: bind
+    - watch_in:
+      - service: bind
+
 bind_local_config:
   file:
     - managed

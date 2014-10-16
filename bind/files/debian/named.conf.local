@@ -1,3 +1,4 @@
+# vim: sts=2 ts=2 sw=2 et ai
 //
 // Do any local configuration here
 //
@@ -12,6 +13,9 @@
 zone "{{ key }}" {
   type {{ args['type'] }};
   file "zones/{{ file }}";
+  {% if args['allow-update'] is defined  -%}
+  allow-update { {{args['allow-update']}}; };
+  {%- endif %}
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
   notify yes;

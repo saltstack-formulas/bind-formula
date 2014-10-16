@@ -13,6 +13,9 @@ bind:
     mode: 640
 
 bind:
+  keys:
+    "core_dhcp":
+      secret: "YourSecretKey"
   configured_zones:
     sub.domain.com:
       type: master
@@ -20,6 +23,10 @@ bind:
     1.168.192.in-addr.arpa:
       type: master
       notify: False
+    dynamic.domain.com:
+      type: master
+      allow-update: "key core_dhcp"
+      notify: True 
 
 available_zones:
   sub.domain.org:
