@@ -81,6 +81,8 @@ bind_local_config:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - context:
+        map: {{ map }}
     - require:
       - pkg: bind
     - watch_in:
@@ -114,7 +116,7 @@ bind_default_zones:
     - watch_in:
       - service: bind
 
-/var/log/bind9:
+{{ map.log_dir }}:
   file:
     - directory
     - user: root
@@ -123,12 +125,15 @@ bind_default_zones:
     - template: jinja
 
 
-/etc/logrotate.d/bind9:
+/etc/logrotate.d/{{ map.service }}:
   file:
     - managed
     - source: salt://bind/files/debian/logrotate_bind
     - user: root
     - group: root
+    - template: jinja
+    - context:
+        map: {{ map }}
 
 {% endif %}
 

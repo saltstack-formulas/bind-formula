@@ -30,6 +30,6 @@ zone "{{ key }}" {
 {% endfor %}
 
 logging {
-  channel "querylog" { file "/var/log/bind9/query.log"; print-time yes; };
+  channel "querylog" { file "{{ map.log_dir }}/query.log"; print-time yes; };
   category queries { querylog; };
 };

@@ -8,6 +8,7 @@
         'options_config': '/etc/bind/named.conf.options',
         'default_zones_config': '/etc/bind/named.conf.default-zones',
         'named_directory': '/var/cache/bind/zones',
+        'log_dir': '/var/log/bind9',
         'user': 'root',
         'group': 'bind'
     },
@@ -17,7 +18,12 @@
         'config': '/etc/named.conf',
         'local_config': '/etc/named.conf.local',
         'named_directory': '/var/named/data',
+        'log_dir': '/var/log/named',
         'user': 'root',
         'group': 'named'
     },
-}, merge=salt['pillar.get']('bind:lookup')) %}
+}, merge=salt['grains.filter_by']({
+    'Ubuntu': {
+        'log_dir': '/var/log/named'
+    },
+}, grain='os', merge=salt['pillar.get']('bind:lookup'))) %}
