@@ -129,6 +129,7 @@ bind_default_zones:
   file:
     - managed
     - source: salt://bind/files/debian/logrotate_bind
+    - template: jinja
     - user: root
     - group: root
     - template: jinja
