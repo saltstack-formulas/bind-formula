@@ -15,8 +15,7 @@ named_directory:
 
 {% if grains['os_family'] == 'RedHat' %}
 bind_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.config }}
     - source: 'salt://bind/files/redhat/named.conf'
     - template: jinja
@@ -29,8 +28,7 @@ bind_config:
       - service: bind
 
 bind_local_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.local_config }}
     - source: 'salt://bind/files/redhat/named.conf.local'
     - template: jinja
@@ -45,8 +43,7 @@ bind_local_config:
 
 {% if grains['os_family'] == 'Debian' %}
 bind_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.config }}
     - source: 'salt://bind/files/debian/named.conf'
     - template: jinja
@@ -59,8 +56,7 @@ bind_config:
       - service: bind
 
 bind_key_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.key_config }}
     - source: 'salt://bind/files/debian/named.conf.key'
     - template: jinja
@@ -73,8 +69,7 @@ bind_key_config:
       - service: bind
 
 bind_local_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.local_config }}
     - source: 'salt://bind/files/debian/named.conf.local'
     - template: jinja
@@ -89,8 +84,7 @@ bind_local_config:
       - service: bind
 
 bind_options_config:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.options_config }}
     - source: 'salt://bind/files/debian/named.conf.options'
     - template: jinja
@@ -103,8 +97,7 @@ bind_options_config:
       - service: bind
 
 bind_default_zones:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.default_zones_config }}
     - source: 'salt://bind/files/debian/named.conf.default-zones'
     - template: jinja
@@ -117,8 +110,7 @@ bind_default_zones:
       - service: bind
 
 {{ map.log_dir }}:
-  file:
-    - directory
+  file.directory:
     - user: root
     - group: bind
     - mode: 775
@@ -126,8 +118,7 @@ bind_default_zones:
 
 
 /etc/logrotate.d/{{ map.service }}:
-  file:
-    - managed
+  file.managed:
     - source: salt://bind/files/debian/logrotate_bind
     - template: jinja
     - user: root
@@ -142,8 +133,7 @@ bind_default_zones:
 {%- set file = salt['pillar.get']("available_zones:" + key + ":file") %}
 {% if args['type'] == "master" -%}
 zones-{{ file }}:
-  file:
-    - managed
+  file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://bind/zones/{{ file }}'
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
