@@ -1,6 +1,6 @@
 {% set map = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['bind9', 'bind9utils'],
+        'pkgs': ['bind9', 'bind9utils', 'dnssec-tools'],
         'service': 'bind9',
         'config': '/etc/bind/named.conf',
         'local_config': '/etc/bind/named.conf.local',
