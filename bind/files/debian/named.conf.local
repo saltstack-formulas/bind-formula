@@ -12,7 +12,11 @@
 {%- set masters = salt['pillar.get']("available_zones:" + key + ":masters") %}
 zone "{{ key }}" {
   type {{ args['type'] }};
+  {% if args['dnssec'] is defined and args['dnssec'] -%}
+  file "zones/{{ file }}.signed";
+  {% else -%}
   file "zones/{{ file }}";
+  {%- endif %}
   {% if args['allow-update'] is defined  -%}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}
