@@ -30,7 +30,8 @@ bind:
       allow-update: "key core_dhcp"
       notify: True 
 
-available_zones:
-  sub.domain.org:
-    file: db.sub.domain.org
-    masters: "192.168.0.1;"
+bind:
+  available_zones:
+    sub.domain.org:
+      file: db.sub.domain.org
+      masters: "192.168.0.1;"
