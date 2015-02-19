@@ -130,7 +130,7 @@ bind_default_zones:
 {% endif %}
 
 {% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
-{%- set file = salt['pillar.get']("available_zones:" + key + ":file") %}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {% if args['type'] == "master" -%}
 zones-{{ file }}:
   file.managed:
