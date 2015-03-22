@@ -3,6 +3,29 @@
 include:
   - bind
 
+{{ map.log_dir }}:
+  file.directory:
+    - user: root
+    - group: bind
+    - mode: 775
+
+bind_restart:
+  service.running:
+    - name: bind9
+    - reload: False
+    - watch:
+      - file: {{ map.log_dir }}/query.log
+    - require:
+      - file: {{ map.log_dir }}/query.log
+
+{{ map.log_dir }}/query.log:
+  file.managed:
+    - user: bind
+    - group: bind
+    - mode: 644
+    - require:
+      - file: {{ map.log_dir }}
+
 named_directory:
   file.directory:
     - name: {{ map.named_directory }}
@@ -80,6 +103,7 @@ bind_local_config:
         map: {{ map }}
     - require:
       - pkg: bind
+      - file: {{ map.log_dir }}/query.log
     - watch_in:
       - service: bind
 
@@ -108,14 +132,6 @@ bind_default_zones:
       - pkg: bind
     - watch_in:
       - service: bind
-
-{{ map.log_dir }}:
-  file.directory:
-    - user: root
-    - group: bind
-    - mode: 775
-    - template: jinja
-
 
 /etc/logrotate.d/{{ map.service }}:
   file.managed:
@@ -154,4 +170,33 @@ signed-{{file}}:
 {% endif %}
 
 {% endif %}
+{% endfor %}
+
+{%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).iteritems() %}
+{%   for key,args in view_data.get('configured_zones', {}).iteritems()  -%}
+{%-  set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%   if args['type'] == "master" -%}
+zones-{{ file }}:
+  file.managed:
+    - name: {{ map.named_directory }}/{{ file }}
+    - source: 'salt://bind/zones/{{ file }}'
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - watch_in:
+      - service: bind
+    - require:
+      - file: {{ map.named_directory }}
+
+{%   if args['dnssec'] is defined and args['dnssec'] -%}
+signed-{{file}}:
+  cmd.run:
+    - cwd: {{ map.named_directory }}
+    - name: zonesigner -zone {{ key }} {{ file }}
+    - prereq:
+      - file: zones-{{ file }}
+{%   endif %}
+
+{%   endif %}
+{%   endfor %}
 {% endfor %}
