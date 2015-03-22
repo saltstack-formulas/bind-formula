@@ -37,3 +37,8 @@ Example Pillar
         user: root
         group: named
         mode: 640
+
+Notes
+=====
+
+* When using views all zones must be configured in views!

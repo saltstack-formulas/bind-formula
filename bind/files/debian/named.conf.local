@@ -7,9 +7,7 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-{% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
   type {{ args['type'] }};
   {% if args['dnssec'] is defined and args['dnssec'] -%}
@@ -31,7 +29,38 @@ zone "{{ key }}" {
   masters { {{ masters }} };
   {%- endif %}
 };
+{%- endmacro %}
+
+{%- if not pillar.bind.configured_views is defined %}
+include "/etc/bind/named.conf.default-zones";
+{%- endif %}
+
+{% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{{ zone(key, args, file, masters) }}
 {% endfor %}
+
+{% for view, view_data in salt['pillar.get']('bind:configured_views', {}).iteritems() %}
+
+view {{ view }}{
+{%-   if view == 'default' %}
+  include "/etc/bind/named.conf.default-zones";
+{%- endif %}
+
+match-clients{
+{%- for acl in view_data.get('match_clients', {}) %}
+  {{ acl }};
+{%- endfor %}
+};
+
+{% for key,args in view_data.get('configured_zones', {}).iteritems()  -%}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+  {{ zone(key, args, file, masters) }}
+{%- endfor %}
+};
+{%- endfor %}
 
 logging {
   channel "querylog" { file "{{ map.log_dir }}/query.log"; print-time yes; };

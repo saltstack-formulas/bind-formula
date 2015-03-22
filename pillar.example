@@ -29,6 +29,15 @@ bind:
       type: master
       allow-update: "key core_dhcp"
       notify: True 
+  configured_views:
+    myview1:
+      match_clients:
+        - client1
+        - client2
+      configured_zones:
+        my.zone:
+          type: master
+          notify: False
 
 bind:
   available_zones:
