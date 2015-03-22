@@ -31,12 +31,21 @@ Example Pillar
 .. code:: yaml
 
     bind:
-      config:
-        name: /etc/named.conf
-        source: salt://bind/files/named.conf
-        user: root
-        group: named
-        mode: 640
+      configured_zones:
+        sub.domain.com:
+          type: master
+          notify: False
+      configured_views:
+        myview1:
+          match_clients:
+            - client1
+            - client2
+        configured_zones:
+          my.zone:
+            type: master
+            notify: False
+
+See *bind/pillar.example*.
 
 Notes
 =====
