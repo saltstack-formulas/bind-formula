@@ -18,6 +18,13 @@ zone "{{ key }}" {
   {% if args['allow-update'] is defined  -%}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}
+  {%- if args.update_policy is defined %}
+  update-policy {
+  {%-   for policy in args.update_policy %}
+    {{ policy }};
+  {%- endfor %}
+  };    
+  {%- endif %}
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
   notify yes;

@@ -38,6 +38,8 @@ bind:
         my.zone:
           type: master
           notify: False
+          update_policy:
+            - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
 
 bind:
   available_zones:
