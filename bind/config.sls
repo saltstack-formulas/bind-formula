@@ -3,6 +3,29 @@
 include:
   - bind
 
+{{ map.log_dir }}:
+  file.directory:
+    - user: root
+    - group: bind
+    - mode: 775
+
+bind_restart:
+  service.running:
+    - name: bind9
+    - reload: False
+    - watch:
+      - file: {{ map.log_dir }}/query.log
+    - require:
+      - file: {{ map.log_dir }}/query.log
+
+{{ map.log_dir }}/query.log:
+  file.managed:
+    - user: bind
+    - group: bind
+    - mode: 644
+    - require:
+      - file: {{ map.log_dir }}
+
 named_directory:
   file.directory:
     - name: {{ map.named_directory }}
@@ -80,6 +103,7 @@ bind_local_config:
         map: {{ map }}
     - require:
       - pkg: bind
+      - file: {{ map.log_dir }}/query.log
     - watch_in:
       - service: bind
 
@@ -108,14 +132,6 @@ bind_default_zones:
       - pkg: bind
     - watch_in:
       - service: bind
-
-{{ map.log_dir }}:
-  file.directory:
-    - user: root
-    - group: bind
-    - mode: 775
-    - template: jinja
-
 
 /etc/logrotate.d/{{ map.service }}:
   file.managed:
