@@ -15,12 +15,21 @@ options {
         // };
 
         auth-nxdomain no;    # conform to RFC1035
-        {% if salt['pillar.get']('bind:config:ipv6', 'False') %}
-        listen-on-v6 { {{ salt['pillar.get']('bind:config:ipv6_listen', 'any') }}; };
-        {% endif -%}
 
-        {# Allow inclusion of arbitrary statements -#}
-        {% for statement, value in salt['pillar.get']('bind:config:options', {}).iteritems() -%}
-        {{ statement }} {{ value}}
-        {% endfor -%}
+{%- if salt['pillar.get']('bind:config:ipv6', False) %}
+        listen-on-v6 { {{ salt['pillar.get']('bind:config:ipv6_listen', 'any') }}; };
+{%- endif -%}
+
+{#- Allow inclusion of arbitrary statements #}
+{%- for statement, value in salt['pillar.get']('bind:config:options', {}).iteritems() -%}
+    {%- if value is iterable and value is not string %}
+        {{ statement }} {
+        {%- for item in value %}
+              {{ item }};
+        {%- endfor %}
+        };
+    {%- else %}
+        {{ statement }} {{ value }};
+    {%- endif %}
+{%- endfor %}
 };
