@@ -2,6 +2,7 @@
     'Debian': {
         'pkgs': ['bind9', 'bind9utils', 'dnssec-tools'],
         'service': 'bind9',
+        'config_source_dir': 'bind/files/debian',
         'config': '/etc/bind/named.conf',
         'local_config': '/etc/bind/named.conf.local',
         'key_config': '/etc/bind/named.conf.key',
@@ -10,17 +11,20 @@
         'named_directory': '/var/cache/bind/zones',
         'log_dir': '/var/log/bind9',
         'user': 'root',
-        'group': 'bind'
+        'group': 'bind',
+        'mode': '644'
     },
     'RedHat': {
         'pkgs': ['bind'],
         'service': 'named',
+        'config_source_dir': 'bind/files/redhat',
         'config': '/etc/named.conf',
         'local_config': '/etc/named.conf.local',
         'named_directory': '/var/named/data',
         'log_dir': '/var/log/named',
         'user': 'root',
-        'group': 'named'
+        'group': 'named',
+        'mode': '640'
     },
 }, merge=salt['grains.filter_by']({
     'Ubuntu': {
