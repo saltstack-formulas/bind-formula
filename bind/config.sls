@@ -130,7 +130,7 @@ zones-{{ file }}:
     - watch_in:
       - service: bind
     - require:
-      - file: {{ map.named_directory }}
+      - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
 signed-{{ file }}:
@@ -158,7 +158,7 @@ zones-{{ file }}:
     - watch_in:
       - service: bind
     - require:
-      - file: {{ map.named_directory }}
+      - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
 signed-{{ file }}:
