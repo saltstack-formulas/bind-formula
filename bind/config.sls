@@ -6,7 +6,7 @@ include:
 {{ map.log_dir }}:
   file.directory:
     - user: root
-    - group: bind
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775
     - require:
       - pkg: bind
@@ -21,7 +21,7 @@ bind_restart:
 {{ map.log_dir }}/query.log:
   file.managed:
     - user: bind
-    - group: bind
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 644
     - require:
       - file: {{ map.log_dir }}
