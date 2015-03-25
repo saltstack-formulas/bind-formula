@@ -113,7 +113,6 @@ bind_default_zones:
     - template: jinja
     - user: root
     - group: root
-    - template: jinja
     - context:
         map: {{ map }}
 {% endif %}
