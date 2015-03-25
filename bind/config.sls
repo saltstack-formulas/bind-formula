@@ -8,6 +8,8 @@ include:
     - user: root
     - group: bind
     - mode: 775
+    - require:
+      - pkg: bind
 
 bind_restart:
   service.running:
