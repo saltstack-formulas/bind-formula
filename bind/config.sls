@@ -17,8 +17,6 @@ bind_restart:
     - reload: False
     - watch:
       - file: {{ map.log_dir }}/query.log
-    - require:
-      - file: {{ map.log_dir }}/query.log
 
 {{ map.log_dir }}/query.log:
   file.managed:
