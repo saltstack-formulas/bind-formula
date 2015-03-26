@@ -6,8 +6,10 @@ include:
 {{ map.log_dir }}:
   file.directory:
     - user: root
-    - group: bind
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775
+    - require:
+      - pkg: bind
 
 bind_restart:
   service.running:
@@ -15,13 +17,11 @@ bind_restart:
     - reload: False
     - watch:
       - file: {{ map.log_dir }}/query.log
-    - require:
-      - file: {{ map.log_dir }}/query.log
 
 {{ map.log_dir }}/query.log:
   file.managed:
     - user: bind
-    - group: bind
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 644
     - require:
       - file: {{ map.log_dir }}
@@ -113,7 +113,6 @@ bind_default_zones:
     - template: jinja
     - user: root
     - group: root
-    - template: jinja
     - context:
         map: {{ map }}
 {% endif %}
@@ -131,7 +130,7 @@ zones-{{ file }}:
     - watch_in:
       - service: bind
     - require:
-      - file: {{ map.named_directory }}
+      - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
 signed-{{ file }}:
@@ -159,7 +158,7 @@ zones-{{ file }}:
     - watch_in:
       - service: bind
     - require:
-      - file: {{ map.named_directory }}
+      - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
 signed-{{ file }}:
