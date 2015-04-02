@@ -25,6 +25,11 @@ zone "{{ key }}" {
   {%- endfor %}
   };
   {%- endif %}
+  allow-transfer {
+  {% for remote in args.get('allow-transfer', {}) %}
+    {{ remote }};
+  {% endfor %}
+  };
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
   notify yes;
