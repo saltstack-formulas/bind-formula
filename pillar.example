@@ -25,6 +25,9 @@ bind:
     1.168.192.in-addr.arpa:
       type: master
       notify: False
+      allow-transfer:
+        - 1.1.1.1
+        - 2.2.2.2 
     dynamic.domain.com:
       type: master
       allow-update: "key core_dhcp"
