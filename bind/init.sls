@@ -1,11 +1,9 @@
 {% from "bind/map.jinja" import map with context %}
 
 bind:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs: {{ map.pkgs|json }}
-  service:
-    - running
+  service.running:
     - name: {{ map.service }}
     - enable: True
     - reload: True

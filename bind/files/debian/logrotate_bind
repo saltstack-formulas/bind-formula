@@ -1,4 +1,4 @@
-/var/log/bind9/query.log {
+{{ map.log_dir }}/query.log {
     rotate 7
     daily
     missingok
@@ -7,5 +7,7 @@
     copytruncate
     compress
     create 0664 bind root
+    {% if not salt['pkg.version']('logrotate').startswith('3.7')-%}
     su
+    {% endif %}
 }

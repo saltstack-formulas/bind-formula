@@ -11,6 +11,8 @@ bind:
     user: root
     group: named
     mode: 640
+    options:
+      allow-recursion: '{ any; };'  # Never include this on a public resolver
 
 bind:
   keys:
@@ -23,12 +25,27 @@ bind:
     1.168.192.in-addr.arpa:
       type: master
       notify: False
+      allow-transfer:
+        - 1.1.1.1
+        - 2.2.2.2 
     dynamic.domain.com:
       type: master
       allow-update: "key core_dhcp"
       notify: True 
+  configured_views:
+    myview1:
+      match_clients:
+        - client1
+        - client2
+      configured_zones:
+        my.zone:
+          type: master
+          notify: False
+          update_policy:
+            - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
 
-available_zones:
-  sub.domain.org:
-    file: db.sub.domain.org
-    masters: "192.168.0.1;"
+bind:
+  available_zones:
+    sub.domain.org:
+      file: db.sub.domain.org
+      masters: "192.168.0.1;"
