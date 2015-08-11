@@ -2,8 +2,7 @@ bind:
   lookup:
     pkgs:
       - bind
-    service:
-      - named
+    service: named
 
 bind:
   config:
