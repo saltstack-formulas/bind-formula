@@ -28,6 +28,7 @@
     },
 }, merge=salt['grains.filter_by']({
     'Ubuntu': {
-        'log_dir': '/var/log/named'
+        'log_dir': '/var/log/named',
+        'user': 'bind'
     },
 }, grain='os', merge=salt['pillar.get']('bind:lookup'))) %}
