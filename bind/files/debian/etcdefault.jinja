@@ -1,0 +1,8 @@
+{%- set resolvconf  = salt['pillar.get']('bind:etcdefault:resolvconf', 'no') %}
+{%- set options     = salt['pillar.get']('bind:etcdefault:options', '-u bind') %}
+
+# run resolvconf?
+RESOLVCONF={{ resolvconf }}
+#
+# # startup options for the server
+OPTIONS="{{ options }}"

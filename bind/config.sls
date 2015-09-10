@@ -120,7 +120,7 @@ bind_default_zones:
 {% for key, args in salt['pillar.get']('bind:configured_zones', {}).iteritems() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {% if args['type'] == "master" -%}
-zones-{{ file }}:
+zones-{{ file }}-{{ loop.index }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://bind/zones/{{ file }}'
@@ -133,7 +133,7 @@ zones-{{ file }}:
       - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
-signed-{{ file }}:
+signed-{{ file }}-{{ loop.index }}:
   cmd.run:
     - cwd: {{ map.named_directory }}
     - name: zonesigner -zone {{ key }} {{ file }}
@@ -148,7 +148,7 @@ signed-{{ file }}:
 {% for key,args in view_data.get('configured_zones', {}).iteritems()  -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {% if args['type'] == "master" -%}
-zones-{{ file }}:
+zones-{{ file }}-{{ loop.index }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://bind/zones/{{ file }}'
@@ -161,7 +161,7 @@ zones-{{ file }}:
       - file: named_directory
 
 {% if args['dnssec'] is defined and args['dnssec'] -%}
-signed-{{ file }}:
+signed-{{ file }}-{{ loop.index }}:
   cmd.run:
     - cwd: {{ map.named_directory }}
     - name: zonesigner -zone {{ key }} {{ file }}
