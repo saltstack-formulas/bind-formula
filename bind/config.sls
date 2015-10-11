@@ -119,7 +119,7 @@ bind_default_zones:
 
 {% for key, args in salt['pillar.get']('bind:configured_zones', {}).iteritems() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{% if args['type'] == "master" -%}
+{% if file and args['type'] == "master" -%}
 zones-{{ file }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
@@ -147,7 +147,7 @@ signed-{{ file }}:
 {%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).iteritems() %}
 {% for key,args in view_data.get('configured_zones', {}).iteritems()  -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{% if args['type'] == "master" -%}
+{% if file and args['type'] == "master" -%}
 zones-{{ file }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
