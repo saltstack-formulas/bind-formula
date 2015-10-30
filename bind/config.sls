@@ -67,6 +67,18 @@ bind_local_config:
     - watch_in:
       - service: bind
 
+{% if salt['pillar.get']('bind:config:protocol', False) %}
+bind_default_config:
+  file.managed:
+    - name: {{ map.default_config }}
+    - source: salt://{{ map.config_source_dir }}/default_{{ salt['pillar.get']('bind:config:protocol', 'ipv4') }}
+    - user: root
+    - group: root
+    - mode: 644
+    - watch_in:
+      - service: bind_restart
+{% endif %}
+
 {% if grains['os_family'] == 'Debian' %}
 bind_key_config:
   file.managed:
