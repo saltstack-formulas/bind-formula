@@ -1,7 +1,0 @@
-# run resolvconf?
-RESOLVCONF=no
-
-# startup options for the server
-# force ipv4 only
-OPTIONS="-6 -u bind"
-
