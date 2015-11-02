@@ -1,4 +1,0 @@
-# ROOTDIR="/var/named/chroot"
-# KEYTAB_FILE="/dir/file"
-# DISABLE_ZONE_CHECKING
-OPTIONS="-4"

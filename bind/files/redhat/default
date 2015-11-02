@@ -1,0 +1,9 @@
+{% set protocol = salt['pillar.get']('bind:config:protocol', False) -%}
+{% set param = [] -%}
+{% if protocol -%}
+  {%- param.append('-' + protocol|string) -%}
+{% endif -%}
+# ROOTDIR="/var/named/chroot"
+# KEYTAB_FILE="/dir/file"
+# DISABLE_ZONE_CHECKING
+OPTIONS="{{ param|join(' ') }}"
