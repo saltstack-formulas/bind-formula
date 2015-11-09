@@ -30,6 +30,19 @@
         'group': 'named',
         'mode': '640'
     },
+    'Arch': {
+        'pkgs': ['bind', 'bind-tools', 'dnssec-tools'],
+        'service': 'named',
+        'config_source_dir': 'bind/files/arch',
+        'zones_source_dir': 'zones',
+        'config': '/etc/named.conf',
+        'local_config': '/etc/named.conf.local',
+        'named_directory': '/var/named',
+        'log_dir': '/var/log/named',
+        'user': 'root',
+        'group': 'named',
+        'mode': '640'
+    },
 }, merge=salt['grains.filter_by']({
     'Ubuntu': {
         'log_dir': '/var/log/named',
