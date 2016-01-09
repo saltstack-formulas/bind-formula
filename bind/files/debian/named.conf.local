@@ -10,11 +10,19 @@
 {%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
   type {{ args['type'] }};
+  {% if args['type'] == 'forward' -%}
+  forwarders {
+    {% for forwarder in args.forwarders -%}
+      {{ forwarder }};
+    {% endfor -%}
+  };
+  {% else -%}
   {% if args['dnssec'] is defined and args['dnssec'] -%}
   file "zones/{{ file }}.signed";
   {% else -%}
   file "zones/{{ file }}";
   {%- endif %}
+
   {% if args['allow-update'] is defined -%}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}
@@ -39,6 +47,7 @@ zone "{{ key }}" {
   {% else -%}
   notify no;
   masters { {{ masters }} };
+  {%- endif %}
   {%- endif %}
 };
 {%- endmacro %}

@@ -11,6 +11,13 @@
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
 zone "{{ key }}" {
   type {{ args['type'] }};
+  {% if args['type'] == 'forward' -%}
+  forwarders {
+    {% for forwarder in args.forwarders -%}
+      {{ forwarder }};
+    {% endfor -%}
+  };
+  {% else -%}
   file "data/{{ file }}";
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
@@ -22,6 +29,6 @@ zone "{{ key }}" {
   notify no;
   masters { {{ masters }} };
   {%- endif %}
+  {%- endif %}
 };
 {% endfor %}
-
