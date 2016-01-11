@@ -33,7 +33,12 @@ bind:
     dynamic.domain.com:
       type: master
       allow-update: "key core_dhcp"
-      notify: True 
+      notify: True
+    sub.anotherdomain.com:
+      type: forward
+      forwarders:
+        - 10.9.8.7
+        - 10.9.8.5 
   configured_views:
     myview1:
       match_clients:
