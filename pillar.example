@@ -13,8 +13,12 @@ bind:
     options:
       allow-recursion: '{ any; };'  # Never include this on a public resolver
 
-   # force bind to serve only one IP protocol (ipv4: 4, ipv6: 6). omitting this reverts to binds default of both.
-   protocol: 4
+    # force bind to serve only one IP protocol (ipv4: 4, ipv6: 6). omitting this reverts to binds default of both.
+    protocol: 4
+
+    # For Debian based systems:
+    # If set to True, the default-zones configuration will be enabled. Defaults to False.
+    default_zones: True
 
 bind:
   keys:
@@ -29,7 +33,7 @@ bind:
       notify: False
       allow-transfer:
         - 1.1.1.1
-        - 2.2.2.2 
+        - 2.2.2.2
     dynamic.domain.com:
       type: master
       allow-update: "key core_dhcp"
@@ -38,7 +42,7 @@ bind:
       type: forward
       forwarders:
         - 10.9.8.7
-        - 10.9.8.5 
+        - 10.9.8.5
   configured_views:
     myview1:
       match_clients:
@@ -50,6 +54,10 @@ bind:
           notify: False
           update_policy:
             - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
+  configured_acls:
+    my_net:
+      - 127.0.0.0/8
+      - 10.20.0.0/16
 
 bind:
   available_zones:
