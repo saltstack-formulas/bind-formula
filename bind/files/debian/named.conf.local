@@ -18,9 +18,9 @@ zone "{{ key }}" {
   };
   {% else -%}
   {% if args['dnssec'] is defined and args['dnssec'] -%}
-  file "zones/{{ file }}.signed";
+  file "{{ map.named_directory }}/{{ file }}.signed";
   {% else -%}
-  file "zones/{{ file }}";
+  file "{{ map.named_directory }}/{{ file }}";
   {%- endif %}
 
   {% if args['allow-update'] is defined -%}
@@ -90,3 +90,11 @@ logging {
   };
   category queries { querylog; };
 };
+
+{%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
+acl {{ name }} {
+  {%- for d in data %}
+  {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}

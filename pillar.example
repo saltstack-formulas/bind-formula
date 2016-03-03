@@ -54,6 +54,10 @@ bind:
           notify: False
           update_policy:
             - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
+  configured_acls:
+    my_net:
+      - 127.0.0.0/8
+      - 10.20.0.0/16
 
 bind:
   available_zones:
