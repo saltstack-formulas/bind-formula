@@ -11,7 +11,7 @@ bind:
     group: named
     mode: 640
     options:
-      allow-recursion: '{ any; };'  # Never include this on a public resolver
+      allow-recursion: '{ any; }'  # Never include this on a public resolver
 
     # force bind to serve only one IP protocol (ipv4: 4, ipv6: 6). omitting this reverts to binds default of both.
     protocol: 4
