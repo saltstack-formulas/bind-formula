@@ -19,6 +19,10 @@ bind:
     # For Debian based systems:
     # If set to True, the default-zones configuration will be enabled. Defaults to False.
     default_zones: True
+    # For Debian based systems:
+    # Include any additional configuration file(s) in named.conf
+    includes:
+      - /some/additional/named.conf
 
 bind:
   keys:
