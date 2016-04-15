@@ -1,7 +1,7 @@
 {% set protocol = salt['pillar.get']('bind:config:protocol', False) -%}
 {% set param = ['-u bind'] -%}
 {% if protocol -%}
-  {{ param.append('-' + protocol|string) }}
+  {% do param.append('-' + protocol|string) -%}
 {% endif -%}
 # run resolvconf?
 RESOLVCONF=no
