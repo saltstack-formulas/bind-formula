@@ -11,10 +11,13 @@
 zone "{{ key }}" {
   type {{ args['type'] }};
   {% if args['type'] == 'forward' -%}
+    {% if args['forward'] is defined -%}
+       forward {{ args['forward'] }};
+    {%- endif %}
   forwarders {
     {% for forwarder in args.forwarders -%}
       {{ forwarder }};
-    {% endfor -%}
+    {%- endfor %}
   };
   {% else -%}
   {% if args['dnssec'] is defined and args['dnssec'] -%}
