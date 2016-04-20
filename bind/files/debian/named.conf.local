@@ -25,7 +25,6 @@ zone "{{ key }}" {
   {% else -%}
   file "{{ map.named_directory }}/{{ file }}";
   {%- endif %}
-
   {% if args['allow-update'] is defined -%}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}
@@ -36,11 +35,13 @@ zone "{{ key }}" {
   {%- endfor %}
   };
   {%- endif %}
+  {%- if args['allow-transfer'] is defined -%}
   allow-transfer {
-  {% for remote in args.get('allow-transfer', {}) %}
+  {%- for remote in args.get('allow-transfer', {}) -%}
     {{ remote }};
-  {% endfor %}
+  {%- endfor -%}
   };
+  {%- endif -%}
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
   notify yes;
