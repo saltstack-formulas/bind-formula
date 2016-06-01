@@ -130,7 +130,7 @@ bind_default_zones:
         map: {{ map }}
 {% endif %}
 
-{% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).iteritems() -%}
+{% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file") %}
 {% if file and zone_data['type'] == "master" -%}
 zones-{{ zone }}:
@@ -157,8 +157,8 @@ signed-{{ zone }}:
 {% endif %}
 {% endfor %}
 
-{%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).iteritems() %}
-{% for zone, zone_data in view_data.get('configured_zones', {}).iteritems() -%}
+{%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
+{% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file") %}
 {% if file and zone_data['type'] == "master" -%}
 zones-{{ view }}-{{ zone }}:

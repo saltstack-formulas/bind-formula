@@ -6,7 +6,7 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-{% for key,args in salt['pillar.get']('bind:configured_zones', {}).iteritems()  -%}
+{% for key,args in salt['pillar.get']('bind:configured_zones', {}).items()  -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
 zone "{{ key }}" {
