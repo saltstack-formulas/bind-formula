@@ -3,6 +3,9 @@ bind:
     pkgs:
       - bind
     service: named
+    # take zonefiles from `salt://bind/zonedata`
+    # instead of `salt://zones`:
+    zones_source_dir: bind/zonedata
 
 bind:
   config:
