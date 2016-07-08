@@ -137,6 +137,7 @@ zones-{{ zone }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://{{ map.zones_source_dir }}/{{ file }}'
+    - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
@@ -165,6 +166,7 @@ zones-{{ view }}-{{ zone }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - source: 'salt://{{ map.zones_source_dir }}/{{ file }}'
+    - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
