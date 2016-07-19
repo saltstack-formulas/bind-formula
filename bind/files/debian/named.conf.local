@@ -25,7 +25,7 @@ zone "{{ key }}" {
   {% else -%}
   file "{{ map.named_directory }}/{{ file }}";
   {%- endif %}
-  {% if args['allow-update'] is defined -%}
+  {%- if args['allow-update'] is defined %}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}
   {%- if args.update_policy is defined %}
@@ -35,20 +35,16 @@ zone "{{ key }}" {
   {%- endfor %}
   };
   {%- endif %}
-  {%- if args['allow-transfer'] is defined -%}
-  allow-transfer {
-  {%- for remote in args.get('allow-transfer', {}) -%}
-    {{ remote }};
-  {%- endfor -%}
-  };
-  {%- endif -%}
-  {% if args['type'] == "master" -%}
-    {% if args['notify'] -%}
+  {%- if args['allow-transfer'] is defined %}
+  allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['type'] == "master" -%}
+    {% if args['notify'] %}
   notify yes;
-    {% else -%}
+    {% else %}
   notify no;
     {%- endif -%}
-  {% else -%}
+  {% else %}
   notify no;
   masters { {{ masters }} };
   {%- endif %}
