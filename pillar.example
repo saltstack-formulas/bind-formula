@@ -35,6 +35,9 @@ bind:
     sub.domain.com:
       type: master
       notify: False
+      also-notify:
+        - 1.1.1.1
+        - 2.2.2.2
     1.168.192.in-addr.arpa:
       type: master
       notify: False

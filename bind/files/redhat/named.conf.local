@@ -22,6 +22,9 @@ zone "{{ key }}" {
   };
   {% else -%}
   file "data/{{ file }}";
+  {%- if args['also-notify'] is defined %}
+  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
+  {%- endif %}
   {% if args['type'] == "master" -%}
     {% if args['notify'] -%}
   notify yes;

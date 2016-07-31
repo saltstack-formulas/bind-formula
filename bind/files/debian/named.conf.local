@@ -38,6 +38,9 @@ zone "{{ key }}" {
   {%- if args['allow-transfer'] is defined %}
   allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
   {%- endif %}
+  {%- if args['also-notify'] is defined %}
+  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
+  {%- endif %}
   {%- if args['type'] == "master" -%}
     {% if args['notify'] %}
   notify yes;
