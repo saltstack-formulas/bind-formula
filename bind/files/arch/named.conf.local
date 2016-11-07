@@ -1,3 +1,4 @@
+# vim: sts=2 ts=2 sw=2 et ai
 //
 // Do any local configuration here
 //
@@ -6,9 +7,7 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-{% for key,args in salt['pillar.get']('bind:configured_zones', {}).items()  -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
   type {{ args['type'] }};
   {% if args['type'] == 'forward' -%}
@@ -22,19 +21,29 @@ zone "{{ key }}" {
   };
   {% else -%}
   file "{{ file }}";
+  {%- if args['allow-transfer'] is defined %}
+  allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
+  {%- endif %}
   {%- if args['also-notify'] is defined %}
   also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
   {%- endif %}
-  {% if args['type'] == "master" -%}
-    {% if args['notify'] -%}
+  {%- if args['type'] == "master" -%}
+    {% if args['notify'] %}
   notify yes;
-    {% else -%}
+    {% else %}
   notify no;
     {%- endif -%}
-  {% else -%}
+  {% else %}
   notify no;
   masters { {{ masters }} };
   {%- endif %}
   {%- endif %}
 };
+{%- endmacro %}
+
+{% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{{ zone(key, args, file, masters) }}
 {% endfor %}
+
