@@ -86,6 +86,7 @@ match-clients {
 };
 {%- endfor %}
 
+{% if salt['pillar.get']("bind:use_querylog", False) %}
 logging {
   channel "querylog" {
     file "{{ map.log_dir }}/query.log";
@@ -93,6 +94,7 @@ logging {
   };
   category queries { querylog; };
 };
+{% endif %}
 
 {%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
 acl {{ name }} {
