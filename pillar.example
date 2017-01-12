@@ -29,7 +29,7 @@ bind:
                                                   # (ipv4: 4, ipv6: 6). Omitting this reverts to
                                                   # binds default of both.
 
-# Debian based systems
+# Debian and FreeBSD based systems
     default_zones: True                           # If set to True, the default-zones configuration
                                                   # will be enabled. Defaults to False.
 
