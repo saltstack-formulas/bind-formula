@@ -1,0 +1,103 @@
+# vim: sts=2 ts=2 sw=2 et ai
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+{%- macro zone(key, args, file, masters) %}
+zone "{{ key }}" {
+  type {{ args['type'] }};
+  {% if args['type'] == 'forward' -%}
+    {% if args['forward'] is defined -%}
+       forward {{ args['forward'] }};
+    {%- endif %}
+  forwarders {
+    {% for forwarder in args.forwarders -%}
+      {{ forwarder }};
+    {%- endfor %}
+  };
+  {% else -%}
+  {% if args['dnssec'] is defined and args['dnssec'] -%}
+  file "{{ map.named_directory }}/{{ file }}.signed";
+  {% else -%}
+  file "{{ map.named_directory }}/{{ file }}";
+  {%- endif %}
+  {%- if args['allow-update'] is defined %}
+  allow-update { {{args['allow-update']}}; };
+  {%- endif %}
+  {%- if args.update_policy is defined %}
+  update-policy {
+  {%-   for policy in args.update_policy %}
+    {{ policy }};
+  {%- endfor %}
+  };
+  {%- endif %}
+  {%- if args['allow-transfer'] is defined %}
+  allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['also-notify'] is defined %}
+  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['type'] == "master" -%}
+    {% if args['notify'] %}
+  notify yes;
+    {% else %}
+  notify no;
+    {%- endif -%}
+  {% else %}
+  notify no;
+  masters { {{ masters }} };
+  {%- endif %}
+  {%- endif %}
+};
+{%- endmacro %}
+
+{%- if salt['pillar.get']('bind:configured_views', {}) is not defined %}
+include "{{ map.default_zones_config }}";
+{%- endif %}
+
+{% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{{ zone(key, args, file, masters) }}
+{% endfor %}
+
+{% for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
+
+view {{ view }} {
+{%- if view == 'default' %}
+  include "{{ map.default_zones_config }}";
+{%- endif %}
+
+match-clients {
+{%- for acl in view_data.get('match_clients', {}) %}
+  {{ acl }};
+{%- endfor %}
+};
+
+{% for key, args in view_data.get('configured_zones', {}).items() -%}
+{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+  {{ zone(key, args, file, masters) }}
+{%- endfor %}
+};
+{%- endfor %}
+
+logging {
+  channel "querylog" {
+    file "{{ map.log_dir }}/query.log";
+    print-time yes;
+  };
+  category queries { querylog; };
+};
+
+{%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
+acl {{ name }} {
+  {%- for d in data %}
+  {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}
