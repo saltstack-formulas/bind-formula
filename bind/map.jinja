@@ -12,6 +12,7 @@
         'default_zones_config': '/etc/bind/named.conf.default-zones',
         'named_directory': '/var/cache/bind/zones',
         'log_dir': '/var/log/bind9',
+        'log_mode': '644',
         'user': 'root',
         'group': 'bind',
         'mode': '644'
@@ -26,6 +27,7 @@
         'default_config': '/etc/sysconfig/named',
         'named_directory': '/var/named/data',
         'log_dir': '/var/log/named',
+        'log_mode': '640',
         'user': 'root',
         'group': 'named',
         'mode': '640'
@@ -39,8 +41,23 @@
         'local_config': '/etc/named.conf.local',
         'named_directory': '/var/named',
         'log_dir': '/var/log/named',
+        'log_mode': '640',
         'user': 'root',
         'group': 'named',
+        'mode': '640'
+    },
+    'FreeBSD': {
+        'pkgs': ['bind99'],
+        'service': 'named',
+        'config_source_dir': 'bind/files/freebsd',
+        'zones_source_dir': 'zones',
+        'config': '/usr/local/etc/namedb/named.conf',
+        'local_config': '/usr/local/etc/namedb/named.conf.local',
+        'named_directory': '/usr/local/etc/namedb/working',
+        'log_dir': '/var/log/named',
+        'log_mode': '660',
+        'user': 'root',
+        'group': 'bind',
         'mode': '640'
     },
 }, merge=salt['grains.filter_by']({

@@ -22,7 +22,7 @@ bind_restart:
   file.managed:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: 644
+    - mode: {{ salt['pillar.get']('bind:config:log_mode', map.log_mode) }}
     - require:
       - file: {{ map.log_dir }}
 
@@ -67,7 +67,7 @@ bind_local_config:
     - watch_in:
       - service: bind
 
-{% if grains['os_family'] != 'Arch' %}
+{% if grains['os_family'] not in ['Arch', 'FreeBSD']  %}
 bind_default_config:
   file.managed:
     - name: {{ map.default_config }}
