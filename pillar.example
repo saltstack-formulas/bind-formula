@@ -24,6 +24,14 @@ bind:
     mode: 640                                     # File & Directory mode
     options:
       allow-recursion: '{ any; }'                 # Never include this on a public resolver
+# RedHat defaults, needed to generate default config file
+      listen-on: 'port 53 { 127.0.0.1; }'
+      listen-on-v6: 'port 53 { ::1; }'
+      allow-query: '{ localhost; }'
+      recursion: 'yes'
+      dnssec-enable: 'yes'
+      dnssec-validation: 'yes'
+# End RedHat defaults
 
     protocol: 4                                   # Force bind to serve only one IP protocol
                                                   # (ipv4: 4, ipv6: 6). Omitting this reverts to
@@ -37,6 +45,7 @@ bind:
       - /some/additional/named.conf               # named.conf
 
 # End Debian based systems
+
 
 ### Keys, Zones, ACLs and Views             ###
 bind:
