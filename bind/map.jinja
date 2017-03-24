@@ -30,7 +30,15 @@
         'log_mode': '640',
         'user': 'root',
         'group': 'named',
-        'mode': '640'
+        'mode': '640',
+        'options': {
+          'listen-on': 'port 53 { 127.0.0.1; }',
+          'listen-on-v6': 'port 53 { ::1; }',
+          'allow-query': '{ localhost; }',
+          'recursion': 'yes',
+          'dnssec-enable': 'yes',
+          'dnssec-validation': 'yes'
+        }
     },
     'Arch': {
         'pkgs': ['bind', 'bind-tools', 'dnssec-tools'],
