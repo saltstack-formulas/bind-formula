@@ -8,59 +8,59 @@
 
 {%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
-  type {{ args['type'] }};
+        type {{ args['type'] }};
   {% if args['type'] == 'forward' -%}
     {% if args['forward'] is defined -%}
-       forward {{ args['forward'] }};
+        forward {{ args['forward'] }};
     {%- endif %}
-  forwarders {
+        forwarders {
     {% for forwarder in args.forwarders -%}
-      {{ forwarder }};
+                {{ forwarder }};
     {%- endfor %}
   };
   {% else -%}
   {% if args['dnssec'] is defined and args['dnssec'] -%}
-  file "{{ map.named_directory }}/{{ file }}.signed";
+        file "{{ file }}.signed";
   {% else -%}
-  file "{{ map.named_directory }}/{{ file }}";
+        file "{{ file }}";
   {%- endif %}
   {%- if args['allow-update'] is defined %}
-  allow-update { {{args['allow-update']}}; };
+        allow-update { {{args['allow-update']}}; };
   {%- endif %}
   {%- if args.update_policy is defined %}
-  update-policy {
+        update-policy {
   {%-   for policy in args.update_policy %}
-    {{ policy }};
+                {{ policy }};
   {%- endfor %}
-  };
+        };
   {%- endif %}
   {%- if args['allow-transfer'] is defined %}
-  allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
+        allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
   {%- endif %}
   {%- if args['also-notify'] is defined %}
-  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
+        also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
   {%- endif %}
   {%- if args['type'] == 'slave' %}
     {%- if args['allow-notify'] is defined %}
-  allow-notify { {{ args.get('allow-notify', []) | join('; ') }}; };
+        allow-notify { {{ args.get('allow-notify', []) | join('; ') }}; };
     {%- endif %}
   {%- endif %}
   {%- if args['type'] == "master" -%}
     {% if args['notify'] %}
-  notify yes;
+        notify yes;
     {% else %}
-  notify no;
+        notify no;
     {%- endif -%}
   {% else %}
-  notify no;
+        notify no;
     {%- if masters is iterable and masters is not string %}
-  masters {
+        masters {
       {%- for item in masters %}
-            {{ item }};
+                {{ item }};
       {%- endfor %}
-  };
+        };
     {%- else %}
-  masters { {{ masters }} };
+        masters { {{ masters }} };
     {%- endif %}
   {%- endif %}
   {%- endif %}
@@ -76,7 +76,7 @@ zone "{{ key }}" {
 {%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
 acl {{ name }} {
   {%- for d in data %}
-  {{ d }};
+        {{ d }};
   {%- endfor %}
 };
 {%- endfor %}
