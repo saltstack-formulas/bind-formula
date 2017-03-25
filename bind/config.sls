@@ -20,6 +20,7 @@ bind_restart:
 
 {{ map.log_dir }}/query.log:
   file.managed:
+    - replace: False
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:log_mode', map.log_mode) }}
