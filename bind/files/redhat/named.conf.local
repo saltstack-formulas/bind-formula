@@ -7,7 +7,7 @@
 //include "/etc/bind/zones.rfc1918";
 
 {%- macro zone(key, args, file, masters) %}
-zone "{{ key }}" {
+zone "{{ key }}" IN {
         type {{ args['type'] }};
   {% if args['type'] == 'forward' -%}
     {% if args['forward'] is defined -%}
