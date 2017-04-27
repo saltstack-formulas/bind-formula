@@ -20,6 +20,7 @@ bind_restart:
 
 {{ map.log_dir }}/query.log:
   file.managed:
+    - replace: False
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:log_mode', map.log_mode) }}
@@ -132,7 +133,7 @@ bind_default_zones:
 {% endif %}
 
 {% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file") %}
+{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
 {% if file and zone_data['type'] == "master" -%}
 zones-{{ zone }}:
   file.managed:
@@ -161,7 +162,7 @@ signed-{{ zone }}:
 
 {%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
 {% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file") %}
+{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
 {% if file and zone_data['type'] == "master" -%}
 zones-{{ view }}-{{ zone }}:
   file.managed:

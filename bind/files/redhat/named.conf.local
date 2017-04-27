@@ -6,35 +6,77 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-{% for key,args in salt['pillar.get']('bind:configured_zones', {}).items()  -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
-zone "{{ key }}" {
-  type {{ args['type'] }};
+{%- macro zone(key, args, file, masters) %}
+zone "{{ key }}" IN {
+        type {{ args['type'] }};
   {% if args['type'] == 'forward' -%}
     {% if args['forward'] is defined -%}
-       forward {{ args['forward'] }};
+        forward {{ args['forward'] }};
     {%- endif %}
-  forwarders {
+        forwarders {
     {% for forwarder in args.forwarders -%}
-      {{ forwarder }};
+                {{ forwarder }};
     {%- endfor %}
   };
   {% else -%}
-  file "data/{{ file }}";
-  {%- if args['also-notify'] is defined %}
-  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
-  {%- endif %}
-  {% if args['type'] == "master" -%}
-    {% if args['notify'] -%}
-  notify yes;
-    {% else -%}
-  notify no;
-    {%- endif -%}
+  {% if args['dnssec'] is defined and args['dnssec'] -%}
+        file "{{ file }}.signed";
   {% else -%}
-  notify no;
-  masters { {{ masters }} };
+        file "{{ file }}";
+  {%- endif %}
+  {%- if args['allow-update'] is defined %}
+        allow-update { {{args['allow-update']}}; };
+  {%- endif %}
+  {%- if args.update_policy is defined %}
+        update-policy {
+  {%-   for policy in args.update_policy %}
+                {{ policy }};
+  {%- endfor %}
+        };
+  {%- endif %}
+  {%- if args['allow-transfer'] is defined %}
+        allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['also-notify'] is defined %}
+        also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['type'] == 'slave' %}
+    {%- if args['allow-notify'] is defined %}
+        allow-notify { {{ args.get('allow-notify', []) | join('; ') }}; };
+    {%- endif %}
+  {%- endif %}
+  {%- if args['type'] == "master" -%}
+    {% if args['notify'] %}
+        notify yes;
+    {% else %}
+        notify no;
+    {%- endif -%}
+  {% else %}
+        notify no;
+    {%- if masters is iterable and masters is not string %}
+        masters {
+      {%- for item in masters %}
+                {{ item }};
+      {%- endfor %}
+        };
+    {%- else %}
+        masters { {{ masters }} };
+    {%- endif %}
   {%- endif %}
   {%- endif %}
 };
+{%- endmacro %}
+
+{% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{%- set file = args.get('file', salt['pillar.get']("bind:available_zones:" + key + ":file")) %}
+{%- set masters = args.get('masters', salt['pillar.get']("bind:available_zones:" + key + ":masters")) %}
+{{ zone(key, args, file, masters) }}
 {% endfor %}
+
+{%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
+acl {{ name }} {
+  {%- for d in data %}
+        {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}
