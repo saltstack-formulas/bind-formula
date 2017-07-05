@@ -72,6 +72,9 @@
     'jessie': {
         'pkgs': ['bind9', 'bind9utils'],
     },
+    'stretch': {
+        'pkgs': ['bind9', 'bind9utils'],
+    },
 }, grain='oscodename', merge=salt['grains.filter_by']({
     'Ubuntu': {
         'log_dir': '/var/log/named',
