@@ -90,7 +90,7 @@ bind_key_config:
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
     - require:
       - pkg: bind
     - watch_in:
