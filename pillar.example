@@ -103,6 +103,44 @@ bind:
       - 127.0.0.0/8                               # And the applicable IP addresses
       - 10.20.0.0/16
 
+### Define zone records in pillar ###
+bind:
+  available_zones:
+    example.com:
+      file: example.com.txt
+      soa:                                        # Declare the SOA RRs for the zone
+        ns: ns1.example.com                       # Required
+        contact: hostmaster.example.com           # Required
+        serial: 2017041001                        # Required
+        class: IN                                 # Optional. Default: IN
+        refresh: 8600                             # Optional. Default: 12h
+        retry: 900                                # Optional. Default: 15m
+        expiry: 86000                             # Optional. Default: 2w
+        nxdomain: 500                             # Optional. Default: 1m
+        ttl: 8600                                 # Optional. Not set by default
+      records:                                    # Records for the zone, grouped by type
+        A:
+          mx1:                                    # A RR with multiple values can
+            - 1.2.3.228                           # be written as an array
+            - 1.2.3.229
+          cat: 2.3.4.188
+          rat: 1.2.3.231
+          live: 1.2.3.236
+        NS:
+          '@':
+            - rat
+            - cat
+        CNAME:
+          ftp: cat.example.com.
+          www: cat.example.com.
+          mail: mx1.example.com.
+          smtp: mx1.example.com.
+        TXT:                                      # Complex records can be expressed as strings
+          '@':
+            - '"some_value"'
+            - '"v=spf1 mx a ip4:1.2.3.4 ~all"'
+          _dmarc: '"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; fo=1:d:s; adkim=r; aspf=r; pct=100; ri=86400"'
+
 ### Externally defined Zones ###
 bind:
   available_zones:
