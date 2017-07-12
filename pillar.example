@@ -108,4 +108,5 @@ bind:
   available_zones:
     sub.domain.org:
       file: db.sub.domain.org                     # DB file containing our zone
-      masters: "192.168.0.1;"                     # Masters of this zone
+      masters:                                    # Masters of this zone
+        - 192.168.0.1
