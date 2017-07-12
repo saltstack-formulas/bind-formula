@@ -35,7 +35,15 @@ zone "{{ key }}" {
     {%- endif -%}
   {% else %}
   notify no;
-  masters { {{ masters }} };
+  {%- if masters is iterable and masters is not string %}
+  masters {
+    {%- for item in masters %}
+    {{ item }};
+    {%- endfor %}
+  };
+  {%- else %}
+    masters { {{ masters }} };
+  {%- endif %}
   {%- endif %}
   {%- endif %}
 };
