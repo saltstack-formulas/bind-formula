@@ -7,6 +7,4 @@
 RESOLVCONF=no
 
 # startup options for the server
-# force ipv4 only
 OPTIONS="{{ param|join(' ') }}"
-
