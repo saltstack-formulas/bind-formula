@@ -110,3 +110,7 @@ bind:
       file: db.sub.domain.org                     # DB file containing our zone
       masters:                                    # Masters of this zone
         - 192.168.0.1
+
+### Make statistics available for monitoring
+bind:
+  statistics: True
