@@ -134,12 +134,22 @@ bind_default_zones:
 
 {% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
+{%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
+{# If we define RRs in pillar, we use the internal template to generate the zone file
+   otherwise, we fallback to the old behaviour and use the declared file
+#}
+{%- set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {% if file and zone_data['type'] == "master" -%}
 zones-{{ zone }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
-    - source: 'salt://{{ map.zones_source_dir }}/{{ file }}'
+    - source: {{ zone_source }}
     - template: jinja
+    {% if zone_records != {} %}
+    - context:
+      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+      records: {{ zone_records }}
+    {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
@@ -163,12 +173,22 @@ signed-{{ zone }}:
 {%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
 {% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
-{% if file and zone_data['type'] == "master" -%}
+{%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
+{# If we define RRs in pillar, we use the internal template to generate the zone file
+   otherwise, we fallback to the old behaviour and use the declared file
+#}
+{%- set zone_source = 'salt://bind/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
+{% if file and zone_data['type'] == 'master' -%}
 zones-{{ view }}-{{ zone }}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
-    - source: 'salt://{{ map.zones_source_dir }}/{{ file }}'
+    - source: {{ zone_source }}
     - template: jinja
+    {% if zone_records != {} %}
+    - context:
+      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+      records: {{ zone_records }}
+    {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
