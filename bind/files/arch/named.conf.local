@@ -55,3 +55,8 @@ zone "{{ key }}" {
 {{ zone(key, args, file, masters) }}
 {% endfor %}
 
+{%- if salt['pillar.get']('bind:statistics', {}) is defined %}
+statistics-channels {
+  inet 127.0.0.1 port 8053;
+};
+{%- endif %}

@@ -94,6 +94,12 @@ match-clients {
 };
 {%- endfor %}
 
+{%- if salt['pillar.get']('bind:statistics', {}) is defined %}
+statistics-channels {
+  inet 127.0.0.1 port 8053;
+};
+{%- endif %}
+
 logging {
   channel "querylog" {
     file "{{ map.log_dir }}/query.log";
