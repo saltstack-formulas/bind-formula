@@ -1,0 +1,120 @@
+
+// Configuration based on https://kb.isc.org/article/AA-01526/0/BIND-Logging-some-basic-recommendations.html
+logging {
+        channel default_log {
+                file "{{ map.log_dir }}/default" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel auth_servers_log {
+                file "{{ map.log_dir }}/auth_servers" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel dnssec_log {
+                file "{{ map.log_dir }}/dnssec" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel zone_transfers_log {
+                file "{{ map.log_dir }}/zone_transfers" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel ddns_log {
+                file "{{ map.log_dir }}/ddns" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel client_security_log {
+                file "{{ map.log_dir }}/client_security" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel rate_limiting_log {
+                file "{{ map.log_dir }}/rate_limiting" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel rpz_log {
+                file "{{ map.log_dir }}/rpz" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+
+//
+// If you have the category ‘queries’ defined, and you don’t want query logging
+// by default, make sure you add option ‘querylog no;’ - then you can toggle
+// query logging on (and off again) using command ‘rndc querylog’
+//
+        channel queries_log {
+                file "{{ map.log_dir }}/queries" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity info;
+        };
+        channel query-errors_log {
+                file "{{ map.log_dir }}/query-errors" versions {{salt['pillar.get']('bind:config:use_extensive_logging:versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:size', '20m')}};
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity dynamic; 
+        };
+        channel default_syslog {
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                syslog daemon;
+                severity info;
+        };
+        channel default_debug {
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                file "named.run";
+                severity dynamic;
+        };
+
+        category default { default_syslog; default_debug; default_log; };
+        category config { default_syslog; default_debug; default_log; }; 
+        category dispatch { default_syslog; default_debug; default_log; };
+        category network { default_syslog; default_debug; default_log; };
+        category general { default_syslog; default_debug; default_log; };
+        category resolver { auth_servers_log; default_debug; };
+        category cname { auth_servers_log; default_debug; };
+        category delegation-only { auth_servers_log; default_debug; };
+        category lame-servers { auth_servers_log; default_debug; };
+        category edns-disabled { auth_servers_log; default_debug; };
+        category dnssec { dnssec_log; default_debug; };
+        category notify { zone_transfers_log; default_debug; };
+        category xfer-in { zone_transfers_log; default_debug; };
+        category xfer-out { zone_transfers_log; default_debug; };
+        category update{ ddns_log; default_debug; };
+        category update-security { ddns_log; default_debug; };
+        category client{ client_security_log; default_debug; };
+        category security { client_security_log; default_debug; };
+        category rate-limit { rate_limiting_log; default_debug; };
+        category spill { rate_limiting_log; default_debug; };
+        category database { rate_limiting_log; default_debug; };
+        category rpz { rpz_log; default_debug; };
+        category queries { queries_log; };
+        category query-errors {query-errors_log; };
+
+};

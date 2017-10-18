@@ -32,19 +32,115 @@ bind:
       dnssec-enable: 'yes'
       dnssec-validation: 'yes'
 # End RedHat defaults
-
     protocol: 4                                   # Force bind to serve only one IP protocol
                                                   # (ipv4: 4, ipv6: 6). Omitting this reverts to
                                                   # binds default of both.
 
-# Debian and FreeBSD based systems
+# Debian and FreeBSD based systems 
     default_zones: True                           # If set to True, the default-zones configuration
                                                   # will be enabled. Defaults to False.
 
     includes:                                     # Include any additional configuration file(s) in
       - /some/additional/named.conf               # named.conf
 
-# End Debian based systems
+# Debian based systems optional configs 
+bind:
+  config:
+    options:
+      querylog: 'yes'                             # Enable query logs, by default is disabled in map.jinja (yes,no)
+
+    #use_extensive_logging: True                   # Enable extensive config for logging
+
+    use_extensive_logging:                        # Enable extensive config for logging                       
+      versions: 5                                 # Additionaly you can set how many files will be stored
+      size: '100m'                                # Maximum size of a individual file 
+
+  controls:
+    local:
+      enabled: true
+      bind:
+        address: 127.0.0.1
+        port: 953
+      allow:
+        - 127.0.0.1
+      keys:
+        - core_dhcp
+    myip4:
+      enabled: true
+      bind:
+        address: 10.161.161.168
+        port: 953
+      allow:
+        - 10.161.161.168
+        - my_net
+      keys:
+        - core_dhcp
+
+  statistics:                                        # Enable statistics-channel 
+    local:
+      enabled: true
+      bind:
+        address: 127.0.0.1
+        port: 8053
+      allow:
+        - 127.0.0.1
+    myip4:
+      enabled: true
+      bind:
+        address: 10.161.161.168
+        port: 8123
+      allow:
+        - 10.161.64.168
+        - my_net
+
+
+  configured_zones:                                  # Debian based systems can have zones using only configured_zones
+    sub.domain.com:                                  # This zone will be copied from zones_source_dir
+      file: sub.domain.com                           # You can optionally specify name fd a file for the zone here. 
+      type: master                                   # Yo don't have define zone again in available_zones. 
+                                                     # This feature is backward compatibile and only available in debian
+      notify: False                                  # if type master you need specify notify True/False
+
+    sub2.domain.com:                                 
+      file: sub2.domain.com
+      type: master
+      notify: True
+      allow-query: 
+        - any
+      allow-transfer: 
+        - my_net
+      allow-update: 'none'
+      also-notify:
+        - 1.2.3.4
+        - 1.2.3.3
+      zone-statistics: yes                           # Enable detailed statistics for zone. You need enable statistics first
+
+    test.zone.com:
+      file: test.zone.com
+      type: slave
+      notify: False
+      masters:
+        - my_dns_masters                             # You can specify masters by using name 
+
+    test.zone2.com:                                  # Zone definied in default style of this formula
+      type: slave                                    # You need specify all info inside available_zones 
+      notify: False
+
+
+  configured_masters:                                # Configure master dns 
+    my_dns_masters:
+      - 10.10.20.20
+      - 10.10.30.30
+
+
+  available_zones:                                   # Configuration required in default style
+    test.zone2.com:
+      file: test.zone2.com                           # You are required specify file name here
+      masters:                                       # As also masters if you have slave type zone
+        - 10.167.73.21
+        - 10.174.60.44
+
+# End Debian based systems features 
 
 
 ### Keys, Zones, ACLs and Views             ###

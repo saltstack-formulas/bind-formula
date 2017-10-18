@@ -41,6 +41,12 @@ zone "{{ key }}" {
   {%- if args['also-notify'] is defined %}
   also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
   {%- endif %}
+  {%- if args['allow-query'] is defined %}
+  allow-query { {{ args.get('allow-query', []) | join('; ') }}; };
+  {%- endif %}
+  {%- if args['zone-statistics'] is defined %}
+  zone-statistics yes;
+  {%- endif %}
   {%- if args['type'] == "master" -%}
     {% if args['notify'] %}
   notify yes;
@@ -68,8 +74,17 @@ include "{{ map.default_zones_config }}";
 {%- endif %}
 
 {% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{%- if salt['pillar.get']("bind:configured_zones:" + key + ":file") -%}
+{%- set file = salt['pillar.get']("bind:configured_zones:" + key + ":file") %}
+{% else %}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- endif -%}
+
+{%- if salt['pillar.get']("bind:configured_zones:" + key + ":masters") -%}
+{%- set masters = salt['pillar.get']("bind:configured_zones:" + key + ":masters") %}
+{% else %}
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
+{%- endif -%}
 {{ zone(key, args, file, masters) }}
 {% endfor %}
 
@@ -94,6 +109,9 @@ match-clients {
 };
 {%- endfor %}
 
+{%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
+include "{{ map.logging_config }}";
+{% else %}
 logging {
   channel "querylog" {
     file "{{ map.log_dir }}/query.log";
@@ -101,9 +119,56 @@ logging {
   };
   category queries { querylog; };
 };
+{%- endif %}
+
+{%- if salt['pillar.get']('bind:controls', False) %}
+controls {
+    {%- for name, control in salt['pillar.get']('bind:controls').iteritems() if control.get('enabled', True) %}
+    inet {{ control.get('bind', {}).get('address', '127.0.0.1') }} port {{ control.get('bind', {}).get('port', 953) }}
+    {%- if control.get('allow') %}
+    allow {
+        {%- for allow in control.allow %}
+        {{ allow }};
+        {%- endfor %}
+    }
+    {%- endif %}
+    {%- if control.get('keys') %}
+    keys {
+        {%- for key in control.get('keys') %}
+        {{ key }};
+        {%- endfor %}
+    }
+    {%- endif %};
+    {%- endfor %}
+};
+{%- endif %}
+
+{%- if salt['pillar.get']('bind:statistics', False) %}
+statistics-channels {
+    {%- for name, channel in salt['pillar.get']('bind:statistics').iteritems() if channel.get('enabled', True) %}
+    inet {{ channel.get('bind', {}).get('address', '127.0.0.1') }} port {{ channel.get('bind', {}).get('port', 953) }}
+    {%- if channel.get('allow') %}
+    allow {
+        {%- for allow in channel.allow %}
+        {{ allow }};
+        {%- endfor %}
+    }
+    {%- endif %};
+    {%- endfor %}
+};
+{%- endif %}
+
 
 {%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
 acl {{ name }} {
+  {%- for d in data %}
+  {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}
+
+{%- for name, data in salt['pillar.get']('bind:configured_masters', {}).items() %}
+masters {{ name }} {
   {%- for d in data %}
   {{ d }};
   {%- endfor %}

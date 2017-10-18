@@ -11,9 +11,9 @@
 {%- set zone_expiry = soa['expiry'] if soa['expiry'] is defined else '2w' %}
 {%- set zone_nxdomain = soa['nxdomain'] if soa['nxdomain'] is defined else '1m' %}
 
-{%- if soa['ttl'] is defined -%}
+{% if soa['ttl'] is defined %}
 $TTL {{ soa['ttl'] }}
-{%- endif %}
+{% endif %}
 @ {{ zone_class }} SOA {{ zone_ns }} {{ zone_contact }} (
     {{ zone_serial }} ; serial
     {{ zone_refresh }} ; refresh

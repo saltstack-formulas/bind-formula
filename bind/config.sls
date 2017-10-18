@@ -130,6 +130,23 @@ bind_default_zones:
     - group: root
     - context:
         map: {{ map }}
+
+{%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
+bind_logging_config:
+  file.managed:
+    - name: {{ map.logging_config }}
+    - source: salt://{{ map.config_source_dir }}/named.conf.logging
+    - template: jinja
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - context:
+        map: {{ map }}
+    - require:
+      - pkg: bind
+    - watch_in:
+      - service: bind
+{%- endif %}
 {% endif %}
 
 {% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
