@@ -55,6 +55,160 @@ bind:
       versions: 5                                 # Additionaly you can set how many files will be stored
       size: '100m'                                # Maximum size of a individual file 
 
+    use_extensive_logging:                        # Enable extensive config for logging. 
+      channel:                                    # https://kb.isc.org/article/AA-01526/0/BIND-Logging-some-basic-recommendations.html
+        default_log:
+          file: default                           
+          size: '200m'                            # size of a individual file (default 20m)
+          versions: '10'                          # how many files will be stored (default 3)
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        auth_servers_log:
+          file: auth_servers
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        dnssec_log:
+          file: dnssec
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        zone_transfers_log:
+          file: zone_transfers
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        ddns_log:
+          file: ddns
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        client_security_log:
+          file: client_security
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        rate_limiting_log:
+          file: rate_limiting
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        rpz_log:
+          file: rpz
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        queries_log:
+          file: queries
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: info
+        query-errors_log:
+          file: query-errors
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          severity: dynamic
+        default_syslog:
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          syslog: daemon
+          severity: info
+        default_debug:
+          file: named.run
+          print-time: yes
+          print-category: yes
+          print-severity: yes
+          syslog: dynamic
+          severity: info
+      category:
+        default:
+          - default_syslog
+          - default_debug
+          - default_log
+        config:
+          - default_syslog
+          - default_debug
+          - default_log
+        dispatch:
+          - default_syslog
+          - default_debug
+          - default_log
+        network:
+          - default_syslog
+          - default_debug
+          - default_log
+        general:
+          - default_syslog
+          - default_debug
+          - default_log
+        resolver:
+          - auth_servers_log
+          - default_debug
+        cname:
+          - auth_servers_log
+          - default_debug
+        delegation-only:
+          - auth_servers_log
+          - default_debug
+        lame-servers:
+          - auth_servers_log
+          - default_debug
+        edns-disabled:
+          - auth_servers_log
+          - default_debug
+        dnssec:
+          - dnssec_log
+          - default_debug
+        notify:
+          - zone_transfers_log
+          - default_debug
+        xfer-in:
+          - zone_transfers_log
+          - default_debug
+        xfer-out:
+          - zone_transfers_log
+          - default_debug
+        update:
+          - ddns_log
+          - default_debug
+        update-security:
+          - ddns_log
+          - default_debug
+        client:
+          - client_security_log
+          - default_debug
+        security:
+          - client_security_log
+          - default_debug
+        rate-limit:
+          - rate_limiting_log
+          - default_debug
+        spill:
+          - rate_limiting_log
+          - default_debug
+        database:
+          - rate_limiting_log
+          - default_debug
+        rpz:
+          - rpz_log
+          - default_debug
+        queries:
+          - queries_log
+        query-errors:
+          - query-errors_log
+
   controls:
     local:
       enabled: true
