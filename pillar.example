@@ -130,7 +130,6 @@ bind:
           print-time: yes
           print-category: yes
           print-severity: yes
-          syslog: dynamic
           severity: info
       category:
         default:
@@ -209,8 +208,22 @@ bind:
         query-errors:
           - query-errors_log
 
-  controls:
-    local:
+  rndc_client:                                       # Generate rndc.conf file it uses previously defined keys
+    options:                                         
+      default:
+        server: localhost
+        port: 953
+        key: my_default_key
+    server:
+      '127.0.0.1':
+        key: dns_key
+      'localhost':
+        key: dns_key
+      '8.8.8.8':
+        key: my_default_key
+
+  controls:                                          # If you define controls then you also should configure rndc_client
+    local:                                           
       enabled: true
       bind:
         address: 127.0.0.1

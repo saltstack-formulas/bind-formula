@@ -147,6 +147,20 @@ bind_logging_config:
     - watch_in:
       - service: bind
 {%- endif %}
+{%- if salt['pillar.get']('bind:rndc_client', False) %}
+bind_rndc_client_config:
+  file.managed:
+    - name: {{ map.rndc_client_config }}
+    - source: salt://{{ map.config_source_dir }}/rndc.conf
+    - template: jinja
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
+    - context:
+        map: {{ map }}
+    - require:
+      - pkg: bind
+{%- endif %}
 {% endif %}
 
 {% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
