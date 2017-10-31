@@ -1,0 +1,33 @@
+
+
+logging {
+
+{% for channel in salt['pillar.get']('bind:config:use_extensive_logging:channel') %}
+        channel {{channel}} {
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':file', False) %}
+                file "{{ map.log_dir }}/{{salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':file')}}" versions {{salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':versions', '3')}} size {{salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':size', '20m')}}; 
+{%- endif %}
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':print-time') %}
+                print-time yes;
+{%- endif %}
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':print-category') %}
+                print-category yes;
+{%- endif %}
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':print-severity') %}
+                print-severity yes;
+{%- endif %}
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':severity') %}
+                severity {{salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':severity')}};
+{%- endif %}
+{%- if salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':syslog') %}
+                syslog {{salt['pillar.get']('bind:config:use_extensive_logging:channel:'+channel+':syslog')}};
+{%- endif %}
+        };
+{% endfor %}
+
+{%- for category in salt['pillar.get']('bind:config:use_extensive_logging:category') %}
+        category {{category}} { {{ salt['pillar.get']('bind:config:use_extensive_logging:category:'+category, []) | join('; ') }}; };
+
+{%- endfor %}
+
+};
