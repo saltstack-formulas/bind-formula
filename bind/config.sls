@@ -41,7 +41,11 @@ named_directory:
 bind_config:
   file.managed:
     - name: {{ map.config }}
+{%- if salt['pillar.get']('bind:config:tmpl', False) %}
+    - source: {{ salt['pillar.get']('bind:config:tmpl') }}
+{%- else %}
     - source: 'salt://{{ map.config_source_dir }}/named.conf'
+{%- endif %}
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
