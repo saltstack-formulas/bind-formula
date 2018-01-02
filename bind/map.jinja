@@ -73,6 +73,21 @@
         'group': 'bind',
         'mode': '640'
     },
+    'Suse': {
+        'pkgs': ['bind'],
+        'service': 'named',
+        'config_source_dir': 'bind/files/suse',
+        'zones_source_dir': 'zones',
+        'config': '/etc/named.conf',
+        'local_config': '/etc/named.d/named.conf.local',
+        'default_config': '/etc/sysconfig/named',
+        'named_directory': '/var/lib/named',
+        'log_dir': '/var/log/named',
+        'log_mode': '640',
+        'user': 'root',
+        'group': 'named',
+        'mode': '640',
+    },
 }, merge=salt['grains.filter_by']({
     'jessie': {
         'pkgs': ['bind9', 'bind9utils'],
