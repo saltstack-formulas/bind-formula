@@ -3,6 +3,7 @@
 ; Modify the values passed to the bind pillar instead.
 ;
 {%- set zone_serial = soa['serial'] %}
+{%- set serial_auto = zone_serial == 'auto' %}
 {%- set zone_ns = soa['ns'] %}
 {%- set zone_contact = soa['contact'] %}
 {%- set zone_class = soa['class'] if soa['class'] is defined else 'IN' %}
@@ -11,17 +12,22 @@
 {%- set zone_expiry = soa['expiry'] if soa['expiry'] is defined else '2w' %}
 {%- set zone_nxdomain = soa['nxdomain'] if soa['nxdomain'] is defined else '1m' %}
 
+{% if not serial_auto or include %}
 {% if soa['ttl'] is defined %}
 $TTL {{ soa['ttl'] }}
 {% endif %}
 @ {{ zone_class }} SOA {{ zone_ns }} {{ zone_contact }} (
-    {{ zone_serial }} ; serial
+    {{ salt['dnsutil.serial'](zone) if serial_auto else zone_serial }} ; serial
     {{ zone_refresh }} ; refresh
     {{ zone_retry }} ; retry
     {{ zone_expiry }} ; expiry
     {{ zone_nxdomain }} ; nxdomain ttl
 );
+{%- endif %}
 
+{% if include %}
+$INCLUDE {{ include }}
+{% else %}
 {% for type, rrs in records.iteritems() %}
 ;
 ; {{ type }} RRs
@@ -36,3 +42,4 @@ $TTL {{ soa['ttl'] }}
 {%- endif %}
 {%- endfor %}
 {% endfor %}
+{%- endif %}

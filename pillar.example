@@ -272,6 +272,7 @@ bind:
         ns: ns1.example.com                       # Required
         contact: hostmaster.example.com           # Required
         serial: 2017041001                        # Required
+#        serial: auto                             # Alternatively, autoupdate serial on each change
         class: IN                                 # Optional. Default: IN
         refresh: 8600                             # Optional. Default: 12h
         retry: 900                                # Optional. Default: 15m

@@ -175,16 +175,19 @@ bind_rndc_client_config:
    otherwise, we fallback to the old behaviour and use the declared file
 #}
 {%- set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
+{%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
 {% if file and zone_data['type'] == "master" -%}
-zones-{{ zone }}:
+zones-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
-    - name: {{ map.named_directory }}/{{ file }}
+    - name: {{ map.named_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
     - context:
+      zone: zones-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
       records: {{ zone_records }}
+      include: False
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -193,6 +196,31 @@ zones-{{ zone }}:
       - service: bind
     - require:
       - file: named_directory
+
+{% if serial_auto %}
+zones-{{ zone }}:
+  module.wait:
+    - name: dnsutil.serial
+    - update: True
+    - zone: zones-{{ zone }}
+    - watch:
+      - file: {{ map.named_directory }}/{{ file }}.include
+  file.managed:
+    - name: {{ map.named_directory }}/{{ file }}
+    - require:
+      - module: zones-{{ zone }}
+    - source: {{ zone_source }}
+    - template: jinja
+    {% if zone_records != {} %}
+    - context:
+      zone: zones-{{ zone }}
+      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+      include: {{ file }}.include
+    {% endif %}
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+{% endif %}
 
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed-{{ zone }}:
@@ -214,16 +242,19 @@ signed-{{ zone }}:
    otherwise, we fallback to the old behaviour and use the declared file
 #}
 {%- set zone_source = 'salt://bind/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
+{%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
 {% if file and zone_data['type'] == 'master' -%}
-zones-{{ view }}-{{ zone }}:
+zones-{{ view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
-    - name: {{ map.named_directory }}/{{ file }}
+    - name: {{ map.named_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
     - context:
+      zone: zones-{{ view }}-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
       records: {{ zone_records }}
+      include: False
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -233,6 +264,30 @@ zones-{{ view }}-{{ zone }}:
     - require:
       - file: named_directory
 
+{% if serial_auto %}
+zones-{{ view }}-{{ zone }}:
+  module.wait:
+    - name: dnsutil.serial
+    - update: True
+    - zone: zones-{{ view }}-{{ zone }}
+    - watch:
+      - file: {{ map.named_directory }}/{{ file }}.include
+  file.managed:
+    - name: {{ map.named_directory }}/{{ file }}
+    - require:
+      - module: zones-{{ view }}-{{ zone }}
+    - source: {{ zone_source }}
+    - template: jinja
+    {% if zone_records != {} %}
+    - context:
+      zone: zones-{{ view }}-{{ zone }}
+      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+      include: {{ file }}.include
+    {% endif %}
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+{% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed-{{ view }}-{{ zone }}:
   cmd.run:
