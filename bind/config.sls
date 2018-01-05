@@ -220,6 +220,10 @@ zones-{{ zone }}:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - watch_in:
+      - service: bind
+    - require:
+      - file: named_directory
 {% endif %}
 
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
@@ -287,6 +291,10 @@ zones-{{ view }}-{{ zone }}:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - watch_in:
+      - service: bind
+    - require:
+      - file: named_directory
 {% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed-{{ view }}-{{ zone }}:
