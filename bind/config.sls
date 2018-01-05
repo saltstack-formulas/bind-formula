@@ -168,7 +168,11 @@ bind_rndc_client_config:
 {%- endif %}
 {% endif %}
 
-{% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{%- set views = salt['pillar.get']('bind:configured_views', {}) %}
+{%- do views.update({False: salt['pillar.get']('bind', {})}) %}{# process non-view zones in the same loop #}
+{%- for view, view_data in views.items() %}
+{%- set dash_view = '-' + view if view else '' %}
+{% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
@@ -176,86 +180,15 @@ bind_rndc_client_config:
 #}
 {%- set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
-{% if file and zone_data['type'] == "master" -%}
-zones-{{ zone }}{{ '.include' if serial_auto else ''}}:
-  file.managed:
-    - name: {{ map.named_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
-    - source: {{ zone_source }}
-    - template: jinja
-    {% if zone_records != {} %}
-    - context:
-      zone: zones-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      records: {{ zone_records }}
-      include: False
-    {% endif %}
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
-    - watch_in:
-      - service: bind
-    - require:
-      - file: named_directory
-
-{% if serial_auto %}
-zones-{{ zone }}:
-  module.wait:
-    - name: dnsutil.serial
-    - update: True
-    - zone: zones-{{ zone }}
-    - watch:
-      - file: {{ map.named_directory }}/{{ file }}.include
-  file.managed:
-    - name: {{ map.named_directory }}/{{ file }}
-    - require:
-      - module: zones-{{ zone }}
-    - source: {{ zone_source }}
-    - template: jinja
-    {% if zone_records != {} %}
-    - context:
-      zone: zones-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      include: {{ file }}.include
-    {% endif %}
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
-    - watch_in:
-      - service: bind
-    - require:
-      - file: named_directory
-{% endif %}
-
-{% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
-signed-{{ zone }}:
-  cmd.run:
-    - cwd: {{ map.named_directory }}
-    - name: zonesigner -zone {{ zone }} {{ file }}
-    - prereq:
-      - file: zones-{{ zone }}
-{% endif %}
-
-{% endif %}
-{% endfor %}
-
-{%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
-{% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
-{%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
-{# If we define RRs in pillar, we use the internal template to generate the zone file
-   otherwise, we fallback to the old behaviour and use the declared file
-#}
-{%- set zone_source = 'salt://bind/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
-{%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
 {% if file and zone_data['type'] == 'master' -%}
-zones-{{ view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
+zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
     - context:
-      zone: zones-{{ view }}-{{ zone }}
+      zone: zones{{ dash_view }}-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
       records: {{ zone_records }}
       include: False
@@ -269,22 +202,22 @@ zones-{{ view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
       - file: named_directory
 
 {% if serial_auto %}
-zones-{{ view }}-{{ zone }}:
+zones{{ dash_view }}-{{ zone }}:
   module.wait:
     - name: dnsutil.serial
     - update: True
-    - zone: zones-{{ view }}-{{ zone }}
+    - zone: zones{{ dash_view }}-{{ zone }}
     - watch:
       - file: {{ map.named_directory }}/{{ file }}.include
   file.managed:
     - name: {{ map.named_directory }}/{{ file }}
     - require:
-      - module: zones-{{ view }}-{{ zone }}
+      - module: zones{{ dash_view }}-{{ zone }}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
     - context:
-      zone: zones-{{ view }}-{{ zone }}
+      zone: zones{{ dash_view }}-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
       include: {{ file }}.include
     {% endif %}
@@ -297,12 +230,12 @@ zones-{{ view }}-{{ zone }}:
       - file: named_directory
 {% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
-signed-{{ view }}-{{ zone }}:
+signed{{ dash_view }}-{{ zone }}:
   cmd.run:
     - cwd: {{ map.named_directory }}
     - name: zonesigner -zone {{ zone }} {{ file }}
     - prereq:
-      - file: zones-{{ view }}-{{ zone }}
+      - file: zones{{ dash_view }}-{{ zone }}
 {% endif %}
 
 {% endif %}
