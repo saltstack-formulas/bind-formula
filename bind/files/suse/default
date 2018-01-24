@@ -1,3 +1,5 @@
+# This file is managed by salt - DO NOT EDIT!
+
 {% set protocol = salt['pillar.get']('bind:config:protocol', False) -%}
 {% set param = [] -%}
 {% if protocol -%}
@@ -5,7 +7,6 @@
 {% endif -%}
 ## Path: Network/DNS/Name Server
 ## Description: Names server settings
-
 ## Type: yesno
 ## Default: yes
 ## ServiceRestart: lwresd,named
