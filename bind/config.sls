@@ -24,7 +24,6 @@ bind_restart:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:log_mode', map.log_mode) }}
-    - replace: False
     - require:
       - file: {{ map.log_dir }}
 
