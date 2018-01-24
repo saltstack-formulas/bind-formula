@@ -82,6 +82,8 @@ bind_default_config:
     - user: root
     - group: root
     - mode: 644
+    - context:
+        map: {{ map }}
     - watch_in:
       - service: bind_restart
 {% endif %}
