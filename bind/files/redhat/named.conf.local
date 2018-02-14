@@ -80,3 +80,7 @@ acl {{ name }} {
   {%- endfor %}
 };
 {%- endfor %}
+
+{%- for incl in salt['pillar.get']('bind:config:includes', []) %}
+include "{{ incl }}";
+{% endfor %}
