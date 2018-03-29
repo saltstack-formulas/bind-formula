@@ -1,3 +1,6 @@
+{%- from "bind/map.jinja" import map with context %}
+{%- set user = salt['pillar.get']('bind:config:user', map.user) %}
+{%- set group = salt['pillar.get']('bind:config:group', map.group) %}
 {{ map.log_dir }}/query.log {
     rotate 7
     daily
@@ -6,8 +9,8 @@
     sharedscripts
     copytruncate
     compress
-    create 0664 bind root
+    create 0664 {{ user }} {{ group }}
     {% if not salt['pkg.version']('logrotate').startswith('3.7')-%}
-    su
+    su {{ user }} {{ group }}
     {% endif %}
 }
