@@ -2,7 +2,7 @@
 {%- set user = salt['pillar.get']('bind:config:user', map.user) %}
 {%- set group = salt['pillar.get']('bind:config:group', map.group) %}
 {%- set mode = salt['pillar.get']('bind:config:log_mode', map.log_mode) %}
-{{ map.log_dir }}/query.log {
+{{ map.log_dir }}/*.log {
     rotate 7
     daily
     missingok
