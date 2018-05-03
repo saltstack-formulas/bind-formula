@@ -169,7 +169,7 @@ bind_rndc_client_config:
 {% endif %}
 
 {% for zone, zone_data in salt['pillar.get']('bind:configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
+{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file"), false %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
@@ -208,7 +208,7 @@ signed-{{ zone }}:
 
 {%- for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
 {% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", zone_data.get('file')) %}
+{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file"), false %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
