@@ -59,7 +59,7 @@ bind_config:
 bind_local_config:
   file.managed:
     - name: {{ map.local_config }}
-    - source: 'salt://{{ map.config_source_dir }}/named.conf.local'
+    - source: salt://bind/files/named.conf.local.jinja
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -140,7 +140,7 @@ bind_default_zones:
 bind_logging_config:
   file.managed:
     - name: {{ map.logging_config }}
-    - source: salt://{{ map.config_source_dir }}/named.conf.logging
+    - source: salt://bind/files/named.conf.logging.jinja
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
