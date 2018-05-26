@@ -85,3 +85,24 @@ Notes
 =====
 
 * When using views all zones must be configured in views!
+
+Salt Compatibility
+==================
+
+Tested with:
+
+* 2017.7.x
+* 2018.3.x
+
+OS Compatibility
+================
+
+Tested with:
+
+* Archlinux
+* CentOS 7
+* Debian-8
+* Debian-9
+* Fedora-27
+* Ubuntu-16.04
+* Ubuntu-18.04

@@ -1,0 +1,115 @@
+---
+driver:
+  name: docker
+
+driver_config:
+  use_sudo: false
+  privileged: true
+  provision_command: mkdir -p /run/sshd
+  run_command: /lib/systemd/systemd
+
+platforms:
+  - name: debian-8
+  - name: debian-9
+  - name: ubuntu-16.04
+  - name: ubuntu-18.04
+  - name: fedora-27
+  - name: centos-7
+
+provisioner:
+  name: salt_solo
+  log_level: info
+  require_chef: false
+  salt_version: latest
+  formula: bind
+  salt_copy_filter:
+    - .kitchen
+    - .git
+  pillars:
+    top.sls:
+      base:
+        '*':
+          - bind
+    bind.sls:
+      bind:
+        configured_acls:
+          client1:
+            - 127.0.0.0/8
+            - 10.20.0.0/16
+          client2:
+            - 10.30.0.0/8
+        configured_zones:
+          my.zone:
+            type: master
+            notify: False
+            update_policy:
+              - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
+
+          example.com:
+            type: master
+            notify: false
+        available_zones:
+          my.zone:
+            file: my.zone.txt
+            soa:
+              class: IN
+              ns: ns1.example.com
+              contact: hostmaster.example.com
+              serial: 2017041001
+              retry: 600
+              ttl: 8600
+            records:
+              A:
+                ns1: 1.2.3.4
+                mx1:
+                  - 1.2.3.228
+                  - 1.2.3.229
+              NS:
+                '@':
+                  - ns1
+          example.com:
+            file: example.com.txt
+            soa:
+              class: IN
+              ns: ns1.example.com
+              contact: hostmaster.example.com
+              serial: 2017041001
+              retry: 600
+              ttl: 8600
+            records:
+              A:
+                mx1:
+                  - 1.2.3.228
+                  - 1.2.3.229
+                  - 2.3.4.186
+                cat: 2.3.4.188
+                rat: 1.2.3.231
+                live: 1.2.3.236
+              NS:
+                '@':
+                  - rat
+                  - cat
+              CNAME:
+                ftp: cat.example.com.
+                www: cat.example.com.
+                mail: mx1.example.com.
+                smtp: mx1.example.com.
+              TXT:
+                '@':
+                  - '"some_value"'
+
+verifier:
+  name: inspec
+  sudo: true
+  reporter: cli
+  inspec_tests:
+    - path: test/integration/default
+
+suites:
+  - name: bind
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - bind
+            - bind.config
