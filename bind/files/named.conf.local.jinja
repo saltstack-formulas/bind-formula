@@ -109,6 +109,7 @@ match-clients {
 };
 {%- endfor %}
 
+{%- if salt['pillar.get']('bind:config:enable_logging', True) %}
 {%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
 include "{{ map.logging_config }}";
 {% else %}
@@ -119,6 +120,7 @@ logging {
   };
   category queries { querylog; };
 };
+{%- endif %}
 {%- endif %}
 
 {%- if salt['pillar.get']('bind:controls', False) %}

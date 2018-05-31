@@ -22,34 +22,7 @@ bind:
     user: root                                    # File & Directory user
     group: named                                  # File & Directory group
     mode: 640                                     # File & Directory mode
-    options:
-      allow-recursion: '{ any; }'                 # Never include this on a public resolver
-# RedHat defaults, needed to generate default config file
-      listen-on: 'port 53 { 127.0.0.1; }'
-      listen-on-v6: 'port 53 { ::1; }'
-      allow-query: '{ localhost; }'
-      recursion: 'yes'
-      dnssec-enable: 'yes'
-      dnssec-validation: 'yes'
-# End RedHat defaults
-    protocol: 4                                   # Force bind to serve only one IP protocol
-                                                  # (ipv4: 4, ipv6: 6). Omitting this reverts to
-                                                  # binds default of both.
-
-# Debian and FreeBSD based systems 
-    default_zones: True                           # If set to True, the default-zones configuration
-                                                  # will be enabled. Defaults to False.
-
-    includes:                                     # Include any additional configuration file(s) in
-      - /some/additional/named.conf               # named.conf
-
-# Debian based systems optional configs 
-bind:
-  config:
-    options:
-      querylog: 'yes'                             # Enable query logs, by default is disabled in map.jinja (yes,no)
-
-
+    enable_logging: true                          # Enable basic query logging
     use_extensive_logging:                        # Enable extensive config for logging. Partial example. For proposed settings please refer to
       channel:                                    # https://kb.isc.org/article/AA-01526/0/BIND-Logging-some-basic-recommendations.html
         default_log:
@@ -106,6 +79,33 @@ bind:
         query-errors:
           - query-errors_log
 
+    options:
+      allow-recursion: '{ any; }'                 # Never include this on a public resolver
+# RedHat defaults, needed to generate default config file
+      listen-on: 'port 53 { 127.0.0.1; }'
+      listen-on-v6: 'port 53 { ::1; }'
+      allow-query: '{ localhost; }'
+      recursion: 'yes'
+      dnssec-enable: 'yes'
+      dnssec-validation: 'yes'
+# End RedHat defaults
+    protocol: 4                                   # Force bind to serve only one IP protocol
+                                                  # (ipv4: 4, ipv6: 6). Omitting this reverts to
+                                                  # binds default of both.
+
+# Debian and FreeBSD based systems 
+    default_zones: True                           # If set to True, the default-zones configuration
+                                                  # will be enabled. Defaults to False.
+
+    includes:                                     # Include any additional configuration file(s) in
+      - /some/additional/named.conf               # named.conf
+
+# Debian based systems optional configs 
+bind:
+  config:
+    options:
+      querylog: 'yes'                             # Enable query logs, by default is disabled in map.jinja (yes,no)
+
   rndc_client:                                       # Generate rndc.conf file it uses previously defined keys
     options:                                         
       default:
@@ -157,7 +157,6 @@ bind:
       allow:
         - 10.161.64.168
         - my_net
-
 
   configured_zones:                                  # Debian based systems can have zones using only configured_zones
     sub.domain.com:                                  # This zone will be copied from zones_source_dir

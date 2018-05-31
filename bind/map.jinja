@@ -1,6 +1,6 @@
 {% set map = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['bind9', 'bind9utils', 'dnssec-tools'],
+        'pkgs': ['bind9', 'bind9utils'],
         'service': 'bind9',
         'config_source_dir': 'bind/files/debian',
         'zones_source_dir': 'zones',
@@ -33,7 +33,7 @@
         'named_directory': '/var/named',
         'log_dir': '/var/log/named',
         'log_mode': '640',
-        'user': 'root',
+        'user': 'named',
         'group': 'named',
         'mode': '640',
         'options': {
@@ -89,12 +89,6 @@
         'mode': '640',
     },
 }, merge=salt['grains.filter_by']({
-    'jessie': {
-        'pkgs': ['bind9', 'bind9utils'],
-    },
-    'stretch': {
-        'pkgs': ['bind9', 'bind9utils'],
-    },
 }, grain='oscodename', merge=salt['grains.filter_by']({
     'Ubuntu': {
         'log_dir': '/var/log/named',
