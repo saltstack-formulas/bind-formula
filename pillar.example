@@ -302,6 +302,31 @@ bind:
             - '"v=spf1 mx a ip4:1.2.3.4 ~all"'
           _dmarc: '"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; fo=1:d:s; adkim=r; aspf=r; pct=100; ri=86400"'
 
+
+
+
+    3.2.1.in-addr.arpa:                           # auto-generated reverse zone
+      file: example.com.rev.txt
+      soa:                                        # Declare the SOA RRs for the zone
+        ns: ns1.example.com                       # Required
+        contact: hostmaster.example.com           # Required
+        serial: auto                              # autoupdate serial on each change
+        class: IN                                 # Optional. Default: IN
+        refresh: 8600                             # Optional. Default: 12h
+        retry: 900                                # Optional. Default: 15m
+        expiry: 86000                             # Optional. Default: 2w
+        nxdomain: 500                             # Optional. Default: 1m
+        ttl: 8600                                 # Optional. Not set by default
+      records:                                    # Records for the zone, grouped by type
+        NS:
+          '@':
+            ns1.example.com.
+      generate_reverse:                           # take all A records from example.com that are in 1.2.3.0/24 subnet
+        net: 1.2.3.0/24                           # and generate reverse records for them
+        for_zones:
+          - example.com                           # example.com is a zone defined in pillar, see above
+
+
 ### Externally defined Zones ###
 bind:
   available_zones:

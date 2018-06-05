@@ -1,4 +1,5 @@
 {% from "bind/map.jinja" import map with context %}
+{% from "bind/reverse_zone.jinja" import generate_reverse %}
 
 include:
   - bind
@@ -175,6 +176,9 @@ bind_rndc_client_config:
 {% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
+{%- if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
+{%-   do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
+{%- endif %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
 #}
