@@ -3,7 +3,7 @@
 include:
   - bind
 
-{{ map.log_dir }}:
+{{ map.chroot_dir }}{{ map.log_dir }}:
   file.directory:
     - user: root
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -16,16 +16,16 @@ bind_restart:
     - name: {{ map.service }}
     - reload: False
     - watch:
-      - file: {{ map.log_dir }}/query.log
+      - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
 
-{{ map.log_dir }}/query.log:
+{{ map.chroot_dir }}{{ map.log_dir }}/query.log:
   file.managed:
     - replace: False
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:log_mode', map.log_mode) }}
     - require:
-      - file: {{ map.log_dir }}
+      - file: {{ map.chroot_dir }}{{ map.log_dir }}
 
 named_directory:
   file.directory:
@@ -68,7 +68,7 @@ bind_local_config:
         map: {{ map }}
     - require:
       - pkg: bind
-      - file: {{ map.log_dir }}/query.log
+      - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
     - watch_in:
       - service: bind
 
