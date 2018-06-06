@@ -25,6 +25,10 @@ zone "{{ key }}" {
   {% else -%}
   file "{{ map.named_directory }}/{{ file }}";
   {%- endif %}
+  {% if args['auto-dnssec'] is defined -%}
+  auto-dnssec {{ args['auto-dnssec'] }};
+  inline-signing yes;
+  {%- endif %}
   {%- if args['allow-update'] is defined %}
   allow-update { {{args['allow-update']}}; };
   {%- endif %}

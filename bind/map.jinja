@@ -19,6 +19,10 @@
         'user': 'bind',
         'group': 'bind',
         'mode': '644',
+        'key_directory': '/etc/bind/keys',
+        'key_algorithm': 'RSASHA256',
+        'key_algorithm_field': '008',
+        'key_size': '4096',
         'options': {
           'querylog': 'no'
         }
@@ -38,13 +42,17 @@
         'user': 'named',
         'group': 'named',
         'mode': '640',
+        'key_directory': '/etc/named.keys',
+        'key_algorithm': 'RSASHA256',
+        'key_algorithm_field': '008',
+        'key_size': '4096',
         'options': {
           'listen-on': 'port 53 { 127.0.0.1; }',
           'listen-on-v6': 'port 53 { ::1; }',
           'allow-query': '{ localhost; }',
           'recursion': 'yes',
           'dnssec-enable': 'yes',
-          'dnssec-validation': 'yes'
+          'dnssec-validation': 'yes',
         }
     },
     'Arch': {
@@ -60,7 +68,11 @@
         'log_mode': '640',
         'user': 'root',
         'group': 'named',
-        'mode': '640'
+        'mode': '640',
+        'key_directory': '/etc/named.keys',
+        'key_algorithm': 'RSASHA256',
+        'key_algorithm_field': '008',
+        'key_size': '4096',
     },
     'FreeBSD': {
         'pkgs': ['bind911'],
@@ -75,7 +87,11 @@
         'log_mode': '660',
         'user': 'root',
         'group': 'bind',
-        'mode': '640'
+        'mode': '640',
+        'key_directory': '/usr/local/etc/namedb/keys',
+        'key_algorithm': 'RSASHA256',
+        'key_algorithm_field': '008',
+        'key_size': '4096',
     },
     'Suse': {
         'pkgs': ['bind'],
@@ -92,7 +108,11 @@
         'user': 'root',
         'group': 'named',
         'mode': '640',
-    },
+        'key_directory': '/etc/named.keys',
+        'key_algorithm': 'RSASHA256',
+        'key_algorithm_field': '008',
+        'key_size': '4096',
+    }
 }, merge=salt['grains.filter_by']({
 }, grain='oscodename', merge=salt['grains.filter_by']({
     'Ubuntu': {

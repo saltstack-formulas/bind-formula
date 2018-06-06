@@ -93,6 +93,61 @@ To use an external tool to manage the <zone> file, simply declare the location
 of the zone file in  `bind:configured_zones:<zone>:file` and **don't** add any
 entry for the <zone> in  `bind:available_zones`
 
+DNSSEC
+======
+
+The `bind` formula currently support two ways to enable DNSSEC:
+
+* Using the `zonesigner` binary provided by `dnssec-tools` (legacy) ;
+* Using internal features of `bind`.
+
+Here is sample pillar entries to use the latter.
+
+On the master server :
+
+.. code:: yaml
+
+bind:
+  lookup:
+    key_directory: '/etc/bind/keys'
+  config:
+    options:
+      dnssec-enable: 'yes'
+      dnssec-validation: 'yes'
+  configured_acls:
+    slave_server:
+      - 192.168.1.2
+  configured_zones:
+    domain.tld:
+      file: "db.domain.tld"
+      type: master
+      notify: True
+      allow-transfer:
+        - localnets
+        - localhost
+        - slave_server
+      allow-update: 'none'
+      auto-dnssec: 'maintain'
+
+On the slave server :
+
+.. code:: yaml
+
+bind:
+  config:
+    options:
+      dnssec-enable: 'yes'
+      dnssec-validation: 'yes'
+  configured_zones:
+    domain.tld:
+      file: "db.domain.tld.signed"
+      type: slave
+      masters:
+        - master_server
+  configured_masters:
+    master_server:
+      - 192.168.1.1
+
 Notes
 =====
 
