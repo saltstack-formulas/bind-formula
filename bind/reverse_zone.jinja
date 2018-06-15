@@ -2,6 +2,7 @@
 {%-     set res = {} %}
 {%-     set net = salt['network.calc_net'](net) %}
 {%      set for_zones = [ for_zones ] if for_zones is string else for_zones %}
+{%      set for_zones = available_zones.keys() if for_zones|length == 1 and for_zones[0] == 'any' else for_zones %}
 {%-     for zone in for_zones %}
 {%-         set A_records = available_zones.get(zone, {}).get('records', {}).get('A', {}) %}
 {%-         for name, addr_list in A_records|dictsort %}

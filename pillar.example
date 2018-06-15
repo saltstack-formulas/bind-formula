@@ -326,6 +326,8 @@ bind:
         for_zones:
           - example.com                           # example.com is a zone defined in pillar, see above
 
+#       for_zones:
+#         - any                                   # generate reverse record for any zone
 
 ### Externally defined Zones ###
 bind:
