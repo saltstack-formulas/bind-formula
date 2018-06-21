@@ -1,3 +1,5 @@
+{%- set key_directory = salt['pillar.get']('bind:lookup:key_directory', key_directory) %}
+
 options {
         directory "/var/cache/bind";
 
@@ -18,6 +20,10 @@ options {
 
 {%- if salt['pillar.get']('bind:config:ipv6', False) %}
         listen-on-v6 { {{ salt['pillar.get']('bind:config:ipv6_listen', 'any') }}; };
+{%- endif -%}
+
+{%- if key_directory %}
+        key-directory "{{ key_directory }}";
 {%- endif -%}
 
 {#- Allow inclusion of arbitrary statements #}

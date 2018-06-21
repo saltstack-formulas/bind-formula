@@ -17,6 +17,12 @@ bind:
 
 ### General config options                  ###
 bind:
+  lookup:
+    key_directory: '/etc/bind/keys'               # Key directory (needed to use auto-dnssec)
+    key_algorithm: RSASHA256                      # Algorithm when using auto-dnssec
+    key_algorithm_field: 008                      # See http://www.bind9.net/dns-sec-algorithm-numbers
+    key_size: 4096                                # Key size
+
   config:
     tmpl: salt://bind/files/debian/named.conf     # Template we'd like to use (not implemented?)
     user: root                                    # File & Directory user
@@ -226,6 +232,19 @@ bind:
       also-notify:                                # Do notify these IP addresses (pointless as
         - 1.1.1.1                                 # notify has been set to no)
         - 2.2.2.2
+
+    sub.domain2.com:                              # Domain zone with DNSSEC
+      type: master                                # We're the master of this zone
+      notify: False                               # Don't notify any NS RRs of any changes to zone
+      dnssec: True                                # Create and manage signed zonefile with zonesigner
+                                                  # You will have to install dnssec-tools by hand
+                                                  # on many distributions
+
+    sub.domain3.com:                              # Domain zone with DNSSEC
+      type: master                                # We're the master of this zone
+      notify: False                               # Don't notify any NS RRs of any changes to zone
+      auto-dnssec: 'maintain'                     # Bind will create and manage the signed zonefile
+                                                  # itself, we only have to provide the clear zone
 
     1.168.192.in-addr.arpa:                       # Reverse lookup for local IPs
       type: master                                # As above

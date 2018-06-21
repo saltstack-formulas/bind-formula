@@ -1,6 +1,12 @@
 {% from "bind/map.jinja" import map with context %}
 {% from "bind/reverse_zone.jinja" import generate_reverse %}
 
+{%- set key_directory = salt['pillar.get']('bind:lookup:key_directory', map.key_directory) %}
+{%- set key_algorithm = salt['pillar.get']('bind:lookup:key_algorithm', map.key_algorithm) %}
+{%- set key_algorithm_field = salt['pillar.get']('bind:lookup:key_algorithm_field', map.key_algorithm_field) %}
+{%- set key_size = salt['pillar.get']('bind:lookup:key_size', map.key_size) %}
+{%- set key_flags = {'zsk': 256, 'ksk': 257} %}
+
 include:
   - bind
 
@@ -18,6 +24,7 @@ bind_restart:
     - reload: False
     - watch:
       - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
+      - file: bind_key_directory
 
 {{ map.chroot_dir }}{{ map.log_dir }}/query.log:
   file.managed:
@@ -110,6 +117,8 @@ bind_options_config:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - context:
+        key_directory: {{ map.key_directory }}
     - require:
       - pkg: bind
     - watch_in:
@@ -205,6 +214,15 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
     - require:
       - file: named_directory
 
+{% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
+signed-{{ zone }}:
+  cmd.run:
+    - cwd: {{ map.named_directory }}
+    - name: zonesigner -zone {{ zone }} {{ file }}
+    - prereq:
+      - file: zones-{{ zone }}
+{% endif %}
+
 {% if serial_auto %}
 zones{{ dash_view }}-{{ zone }}:
   module.wait:
@@ -241,7 +259,27 @@ signed{{ dash_view }}-{{ zone }}:
     - prereq:
       - file: zones{{ dash_view }}-{{ zone }}
 {% endif %}
-
 {% endif %}
+
+{% if zone_data['auto-dnssec'] is defined -%}
+zsk-{{ zone }}:
+  cmd.run:
+    - cwd: {{ key_directory }}
+    - name: dnssec-keygen -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
+    - runas: {{ map.user }}
+    - unless: "grep {{ key_flags.zsk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
+    - require:
+      - file: bind_key_directory
+
+ksk-{{ zone }}:
+  cmd.run:
+    - cwd: {{ key_directory }}
+    - name: dnssec-keygen -f KSK -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
+    - runas: {{ map.user }}
+    - unless: "grep {{ key_flags.ksk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
+    - require:
+      - file: bind_key_directory
+{% endif %}
+
 {% endfor %}
 {% endfor %}
