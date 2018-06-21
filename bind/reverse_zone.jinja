@@ -1,0 +1,24 @@
+{%- macro generate_reverse(zone_records, net, for_zones, available_zones) %}
+{%-     set res = {} %}
+{%-     set net = salt['network.calc_net'](net) %}
+{%      set for_zones = [ for_zones ] if for_zones is string else for_zones %}
+{%      set for_zones = available_zones.keys() if for_zones|length == 1 and for_zones[0] == 'any' else for_zones %}
+{%-     for zone in for_zones %}
+{%-         set A_records = available_zones.get(zone, {}).get('records', {}).get('A', {}) %}
+{%-         for name, addr_list in A_records|dictsort %}
+{%-             set addr_list = [ addr_list ] if addr_list is string or addr_list is number else addr_list %}
+{%-             for addr in addr_list %}
+{%-                 if salt['network.ip_in_subnet'](addr, net) %}
+{%-                     if name.endswith('.') %}
+{%-                         set full_name = name %}
+{%-                     else  %}
+{%-                         set full_name = name + '.' + zone + '.'  %}
+{%-                     endif %}
+{%-                     set rev_ip = '.'.join(addr.split('.')[::-1]) %}
+{%-                     do res.update({rev_ip + '.in-addr.arpa.': full_name}) %}
+{%-                 endif %}
+{%-             endfor %}
+{%-         endfor %}
+{%-     endfor %}
+{%-     do zone_records.update({'PTR': res }) %}
+{%- endmacro %}
