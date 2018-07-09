@@ -214,15 +214,6 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
     - require:
       - file: named_directory
 
-{% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
-signed-{{ zone }}:
-  cmd.run:
-    - cwd: {{ map.named_directory }}
-    - name: zonesigner -zone {{ zone }} {{ file }}
-    - prereq:
-      - file: zones-{{ zone }}
-{% endif %}
-
 {% if serial_auto %}
 zones{{ dash_view }}-{{ zone }}:
   module.wait:
