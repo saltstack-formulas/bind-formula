@@ -246,7 +246,7 @@ zones{{ dash_view }}-{{ zone }}:
     - context:
       zone: zones{{ dash_view }}-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      include: {{ file }}.include
+      include: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}.include
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
