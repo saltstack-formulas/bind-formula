@@ -45,6 +45,17 @@ named_directory:
     - require:
       - pkg: bind
 
+bind_zones_directory:
+  file.directory:
+    - name: {{ map.named_directory }}/{{ map.zones_directory }}
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: 775
+    - makedirs: True
+    - require:
+      - pkg: bind
+      - file: named_directory
+
 bind_config:
   file.managed:
     - name: {{ map.config }}
@@ -120,6 +131,7 @@ bind_options_config:
     - context:
         key_directory: {{ map.key_directory }}
         named_directory: {{ map.named_directory }}
+        zones_directory: {{ map.zones_directory }}
     - require:
       - pkg: bind
     - watch_in:
@@ -197,7 +209,7 @@ bind_rndc_client_config:
 {% if file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
-    - name: {{ map.named_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
+    - name: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
@@ -214,6 +226,7 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
       - service: bind
     - require:
       - file: named_directory
+      - file: bind_zones_directory
 
 {% if serial_auto %}
 zones{{ dash_view }}-{{ zone }}:
@@ -222,9 +235,9 @@ zones{{ dash_view }}-{{ zone }}:
     - update: True
     - zone: zones{{ dash_view }}-{{ zone }}
     - watch:
-      - file: {{ map.named_directory }}/{{ file }}.include
+      - file: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}.include
   file.managed:
-    - name: {{ map.named_directory }}/{{ file }}
+    - name: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}
     - require:
       - module: zones{{ dash_view }}-{{ zone }}
     - source: {{ zone_source }}
@@ -242,11 +255,12 @@ zones{{ dash_view }}-{{ zone }}:
       - service: bind
     - require:
       - file: named_directory
+      - file: bind_zones_directory
 {% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed{{ dash_view }}-{{ zone }}:
   cmd.run:
-    - cwd: {{ map.named_directory }}
+    - cwd: {{ map.named_directory }}/{{ map.zones_directory }}
     - name: zonesigner -zone {{ zone }} {{ file }}
     - prereq:
       - file: zones{{ dash_view }}-{{ zone }}
