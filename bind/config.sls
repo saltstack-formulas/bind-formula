@@ -7,6 +7,12 @@
 {%- set key_size = salt['pillar.get']('bind:lookup:key_size', map.key_size) %}
 {%- set key_flags = {'zsk': 256, 'ksk': 257} %}
 
+{%- if map.get('zones_directory') %}
+  {%- set zones_directory = map.zones_directory %}
+{%- else %}
+  {%- set zones_directory = map.named_directory %}
+{%- endif %}
+
 include:
   - bind
 
@@ -45,9 +51,10 @@ named_directory:
     - require:
       - pkg: bind
 
+{% if map.get('zones_directory') %}
 bind_zones_directory:
   file.directory:
-    - name: {{ map.named_directory }}/{{ map.zones_directory }}
+    - name: {{ zones_directory }}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775
@@ -55,6 +62,7 @@ bind_zones_directory:
     - require:
       - pkg: bind
       - file: named_directory
+{% endif %}
 
 bind_config:
   file.managed:
@@ -85,6 +93,7 @@ bind_local_config:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - context:
         map: {{ map }}
+        zones_directory: {{ zones_directory }}
     - require:
       - pkg: bind
       - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
@@ -131,7 +140,7 @@ bind_options_config:
     - context:
         key_directory: {{ map.key_directory }}
         named_directory: {{ map.named_directory }}
-        zones_directory: {{ map.zones_directory }}
+        zones_directory: {{ zones_directory }}
     - require:
       - pkg: bind
     - watch_in:
@@ -209,7 +218,7 @@ bind_rndc_client_config:
 {% if file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
-    - name: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
+    - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
@@ -226,7 +235,9 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
       - service: bind
     - require:
       - file: named_directory
+      {% if map.get('zones_directory') %}
       - file: bind_zones_directory
+      {% endif %}
 
 {% if serial_auto %}
 zones{{ dash_view }}-{{ zone }}:
@@ -235,9 +246,9 @@ zones{{ dash_view }}-{{ zone }}:
     - update: True
     - zone: zones{{ dash_view }}-{{ zone }}
     - watch:
-      - file: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}.include
+      - file: {{ zones_directory }}/{{ file }}.include
   file.managed:
-    - name: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}
+    - name: {{ zones_directory }}/{{ file }}
     - require:
       - module: zones{{ dash_view }}-{{ zone }}
     - source: {{ zone_source }}
@@ -246,7 +257,7 @@ zones{{ dash_view }}-{{ zone }}:
     - context:
       zone: zones{{ dash_view }}-{{ zone }}
       soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      include: {{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}.include
+      include: {{ zones_directory }}/{{ file }}.include
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -255,12 +266,14 @@ zones{{ dash_view }}-{{ zone }}:
       - service: bind
     - require:
       - file: named_directory
+      {% if map.get('zones_directory') %}
       - file: bind_zones_directory
+      {% endif %}
 {% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed{{ dash_view }}-{{ zone }}:
   cmd.run:
-    - cwd: {{ map.named_directory }}/{{ map.zones_directory }}
+    - cwd: {{ zones_directory }}
     - name: zonesigner -zone {{ zone }} {{ file }}
     - prereq:
       - file: zones{{ dash_view }}-{{ zone }}
