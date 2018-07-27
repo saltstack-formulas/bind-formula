@@ -21,9 +21,9 @@ zone "{{ key }}" {
   };
   {% else -%}
   {% if args['dnssec'] is defined and args['dnssec'] -%}
-  file "{{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}.signed";
+  file "{{ zones_directory }}/{{ file }}.signed";
   {% else -%}
-  file "{{ map.named_directory }}/{{ map.zones_directory }}/{{ file }}";
+  file "{{ zones_directory }}/{{ file }}";
   {%- endif %}
   {% if args['auto-dnssec'] is defined -%}
   auto-dnssec {{ args['auto-dnssec'] }};
