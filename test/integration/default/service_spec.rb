@@ -14,4 +14,3 @@ control 'Bind9 service' do
     it { should be_running }
   end
 end
-
