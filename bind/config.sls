@@ -31,6 +31,12 @@ bind_restart:
     - watch:
       - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
       - file: bind_key_directory
+{% if salt['pillar.get']('bind:config:includes', []) %}
+    - require:
+  {% for included_file in salt['pillar.get']('bind:config:includes', []) %}
+      - file: {{ included_file }}
+  {% endfor %}
+{% endif %}
 
 {{ map.chroot_dir }}{{ map.log_dir }}/query.log:
   file.managed:
@@ -80,6 +86,11 @@ bind_config:
         map: {{ map }}
     - require:
       - pkg: bind
+{% if salt['pillar.get']('bind:config:includes', []) %}
+  {% for included_file in salt['pillar.get']('bind:config:includes', []) %}
+      - file: {{ included_file }}
+  {% endfor %}
+{% endif %}
     - watch_in:
       - service: bind
 
@@ -206,6 +217,7 @@ bind_rndc_client_config:
 {%- set dash_view = '-' + view if view else '' %}
 {% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
+{%- set zone_dynamic = salt['pillar.get']('bind:available_zones:' + zone + ':dynamic', False) %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {%- if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
 {%-   do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
@@ -221,6 +233,9 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
     - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
     - source: {{ zone_source }}
     - template: jinja
+    {% if zone_dynamic %}
+    - replace: False
+    {% endif %}
     {% if zone_records != {} %}
     - context:
       zone: zones{{ dash_view }}-{{ zone }}
@@ -302,3 +317,4 @@ ksk-{{ zone }}:
 
 {% endfor %}
 {% endfor %}
+
