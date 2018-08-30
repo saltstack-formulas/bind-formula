@@ -24,12 +24,17 @@ when 'arch','redhat', 'centos', 'fedora'
   named_directory = '/var/named'
   zones_directory = named_directory
   keys_directory  = '/etc/named.keys'
-  log_directory   = '/var/log/named'
   keys_mode       = '0755'
   conf_mode       = '0640'
   config          = '/etc/named.conf'
-when 'ubuntu'
+end
+
+# Override log directory by OS
+case os[:name]
+when 'arch', 'ubuntu'
   log_directory   = '/var/log/named'
+when 'redhat', 'centos', 'fedora'
+  log_directory   = '/var/named/data'
 end
 
 # Check main config dir
