@@ -202,9 +202,9 @@ bind_rndc_client_config:
 
 {%- set views = {False: salt['pillar.get']('bind', {})} %}{# process non-view zones in the same loop #}
 {%- do views.update(salt['pillar.get']('bind:configured_views', {})) %}
-{%- for view, view_data in views.items() %}
+{%- for view, view_data in views|dictsort %}
 {%- set dash_view = '-' + view if view else '' %}
-{% for zone, zone_data in view_data.get('configured_zones', {}).items() -%}
+{% for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
 {%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {%- if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}

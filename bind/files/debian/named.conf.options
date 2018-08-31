@@ -27,7 +27,7 @@ options {
 {%- endif -%}
 
 {#- Allow inclusion of arbitrary statements #}
-{%- for statement, value in salt['pillar.get']('bind:config:options', {}).items() -%}
+{%- for statement, value in salt['pillar.get']('bind:config:options', {})|dictsort -%}
     {%- if value is iterable and value is not string %}
         {{ statement }} {
         {%- for item in value %}

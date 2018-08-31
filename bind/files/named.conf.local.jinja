@@ -77,7 +77,7 @@ zone "{{ key }}" {
 include "{{ map.default_zones_config }}";
 {%- endif %}
 
-{% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
+{% for key, args in salt['pillar.get']('bind:configured_zones', {})|dictsort -%}
 {%- if salt['pillar.get']("bind:configured_zones:" + key + ":file") -%}
 {%- set file = salt['pillar.get']("bind:configured_zones:" + key + ":file") %}
 {% else %}
@@ -92,7 +92,7 @@ include "{{ map.default_zones_config }}";
 {{ zone(key, args, file, masters) }}
 {% endfor %}
 
-{% for view, view_data in salt['pillar.get']('bind:configured_views', {}).items() %}
+{% for view, view_data in salt['pillar.get']('bind:configured_views', {})|dictsort %}
 
 view {{ view }} {
 {%- if view == 'default' %}
@@ -105,7 +105,7 @@ match-clients {
 {%- endfor %}
 };
 
-{% for key, args in view_data.get('configured_zones', {}).items() -%}
+{% for key, args in view_data.get('configured_zones', {})|dictsort -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
   {{ zone(key, args, file, masters) }}
@@ -165,7 +165,7 @@ statistics-channels {
 {%- endif %}
 
 
-{%- for name, data in salt['pillar.get']('bind:configured_acls', {}).items() %}
+{%- for name, data in salt['pillar.get']('bind:configured_acls', {})|dictsort %}
 acl {{ name }} {
   {%- for d in data %}
   {{ d }};
@@ -173,7 +173,7 @@ acl {{ name }} {
 };
 {%- endfor %}
 
-{%- for name, data in salt['pillar.get']('bind:configured_masters', {}).items() %}
+{%- for name, data in salt['pillar.get']('bind:configured_masters', {})|dictsort %}
 masters {{ name }} {
   {%- for d in data %}
   {{ d }};
