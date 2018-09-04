@@ -28,11 +28,11 @@ $TTL {{ soa['ttl'] }}
 {% if include %}
 $INCLUDE {{ include }}
 {% else %}
-{% for type, rrs in records.iteritems() %}
+{% for type, rrs in records|dictsort %}
 ;
 ; {{ type }} RRs
 ;
-{%- for host, data in rrs.iteritems() %}
+{%- for host, data in rrs|dictsort %}
 {%- if data is number or data is string %}
 {{ host }} {{ type }} {{ data }}
 {%- elif data is iterable %}

@@ -129,7 +129,7 @@ logging {
 
 {%- if salt['pillar.get']('bind:controls', False) %}
 controls {
-    {%- for name, control in salt['pillar.get']('bind:controls').iteritems() if control.get('enabled', True) %}
+    {%- for name, control in salt['pillar.get']('bind:controls')|dictsort if control.get('enabled', True) %}
     inet {{ control.get('bind', {}).get('address', '127.0.0.1') }} port {{ control.get('bind', {}).get('port', 953) }}
     {%- if control.get('allow') %}
     allow {
@@ -151,7 +151,7 @@ controls {
 
 {%- if salt['pillar.get']('bind:statistics', False) %}
 statistics-channels {
-    {%- for name, channel in salt['pillar.get']('bind:statistics').iteritems() if channel.get('enabled', True) %}
+    {%- for name, channel in salt['pillar.get']('bind:statistics')|dictsort if channel.get('enabled', True) %}
     inet {{ channel.get('bind', {}).get('address', '127.0.0.1') }} port {{ channel.get('bind', {}).get('port', 953) }}
     {%- if channel.get('allow') %}
     allow {
