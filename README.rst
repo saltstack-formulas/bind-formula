@@ -107,46 +107,46 @@ On the master server :
 
 .. code:: yaml
 
-bind:
-  lookup:
-    key_directory: '/etc/bind/keys'
-  config:
-    options:
-      dnssec-enable: 'yes'
-      dnssec-validation: 'yes'
-  configured_acls:
-    slave_server:
-      - 192.168.1.2
-  configured_zones:
-    domain.tld:
-      file: "db.domain.tld"
-      type: master
-      notify: True
-      allow-transfer:
-        - localnets
-        - localhost
-        - slave_server
-      allow-update: 'none'
-      auto-dnssec: 'maintain'
+  bind:
+    lookup:
+      key_directory: '/etc/bind/keys'
+    config:
+      options:
+        dnssec-enable: 'yes'
+        dnssec-validation: 'yes'
+    configured_acls:
+      slave_server:
+        - 192.168.1.2
+    configured_zones:
+      domain.tld:
+        file: "db.domain.tld"
+        type: master
+        notify: True
+        allow-transfer:
+          - localnets
+          - localhost
+          - slave_server
+        allow-update: 'none'
+        auto-dnssec: 'maintain'
 
 On the slave server :
 
 .. code:: yaml
 
-bind:
-  config:
-    options:
-      dnssec-enable: 'yes'
-      dnssec-validation: 'yes'
-  configured_zones:
-    domain.tld:
-      file: "db.domain.tld.signed"
-      type: slave
-      masters:
-        - master_server
-  configured_masters:
-    master_server:
-      - 192.168.1.1
+  bind:
+    config:
+      options:
+        dnssec-enable: 'yes'
+        dnssec-validation: 'yes'
+    configured_zones:
+      domain.tld:
+        file: "db.domain.tld.signed"
+        type: slave
+        masters:
+          - master_server
+    configured_masters:
+      master_server:
+        - 192.168.1.1
 
 Notes
 =====
