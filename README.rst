@@ -60,7 +60,7 @@ Example Pillar
             type: master
             notify: False
 
-See *bind/pillar.example* for a more complete example.
+See *pillar.example* for a more complete example.
 
 Management of zone files
 ========================
