@@ -203,19 +203,24 @@ bind_rndc_client_config:
 {%- set views = {False: salt['pillar.get']('bind', {})} %}{# process non-view zones in the same loop #}
 {%- do views.update(salt['pillar.get']('bind:configured_views', {})) %}
 {%- for view, view_data in views|dictsort %}
-{%- set dash_view = '-' + view if view else '' %}
-{% for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
-{%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
-{%- if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
-{%-   do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
-{%- endif %}
+{%-   set dash_view = '-' + view if view else '' %}
+{%-   for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
+{%-     if 'file' in zone_data %}
+{%-       set file = zone_data.file %}
+{%-       set zone = file|replace(".txt", "") %}
+{%-     else %}
+{%-       set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
+{%-     endif %}
+{%-     set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
+{%-     if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
+{%-       do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
+{%-     endif %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
 #}
-{%- set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
-{%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
-{% if file and zone_data['type'] == 'master' -%}
+{%-     set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
+{%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
+{%      if file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
     - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
