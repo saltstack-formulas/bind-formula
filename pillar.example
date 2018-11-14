@@ -297,7 +297,9 @@ bind:
   configured_acls:                                # And now for some ACLs
     my_net:                                       # Our ACL's name
       - 127.0.0.0/8                               # And the applicable IP addresses
-      - 10.20.0.0/16
+      - 10.20.0.0/16                              # If using views, you need to create an ACL per view to differentiate
+                                                  # who accesses the view, and then specify the appropriate ACL name under
+                                                  # the 'match_clients' sub-key of your view.
 
 ### Define zone records in pillar ###
 bind:
