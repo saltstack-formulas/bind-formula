@@ -7,6 +7,22 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
+{% for name, data in salt['pillar.get']('bind:configured_acls', {})|dictsort %}
+acl {{ name }} {
+  {%- for d in data %}
+  {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}
+
+{%- for name, data in salt['pillar.get']('bind:configured_masters', {})|dictsort %}
+masters {{ name }} {
+  {%- for d in data %}
+  {{ d }};
+  {%- endfor %}
+};
+{%- endfor %}
+
 {%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
   type {{ args['type'] }};
@@ -92,23 +108,26 @@ include "{{ map.default_zones_config }}";
 {{ zone(key, args, file, masters) }}
 {% endfor %}
 
-{% for view, view_data in salt['pillar.get']('bind:configured_views', {})|dictsort %}
+{%- for view, view_data in salt['pillar.get']('bind:configured_views', {})|dictsort %}
 
 view {{ view }} {
 {%- if view == 'default' %}
   include "{{ map.default_zones_config }}";
 {%- endif %}
-
-match-clients {
+    match-clients {
 {%- for acl in view_data.get('match_clients', {}) %}
-  {{ acl }};
+        {{ acl }};
 {%- endfor %}
-};
+    };
 
-{% for key, args in view_data.get('configured_zones', {})|dictsort -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- for key, args in view_data.get('configured_zones', {})|dictsort -%}
+{%- if 'file' in args %}
+{%-   set file = args.file %}
+{%- else %}
+{%-   set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
+{%- endif %}
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
-  {{ zone(key, args, file, masters) }}
+        {{ zone(key, args, file, masters) }}
 {%- endfor %}
 };
 {%- endfor %}
@@ -163,20 +182,3 @@ statistics-channels {
     {%- endfor %}
 };
 {%- endif %}
-
-
-{%- for name, data in salt['pillar.get']('bind:configured_acls', {})|dictsort %}
-acl {{ name }} {
-  {%- for d in data %}
-  {{ d }};
-  {%- endfor %}
-};
-{%- endfor %}
-
-{%- for name, data in salt['pillar.get']('bind:configured_masters', {})|dictsort %}
-masters {{ name }} {
-  {%- for d in data %}
-  {{ d }};
-  {%- endfor %}
-};
-{%- endfor %}
