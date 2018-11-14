@@ -233,7 +233,7 @@ bind:
         - 1.1.1.1                                 # notify has been set to no)
         - 2.2.2.2                                 # If using views, do not define configured_zones
                                                   # at this indentation level - define it using the sub-key
-                                                  # of your configured_view.
+                                                  # of your view under configured_views.
 
     sub.domain2.com:                              # Domain zone with DNSSEC
       type: master                                # We're the master of this zone
@@ -281,13 +281,13 @@ bind:
       configured_zones:                           # Zones that our view is applicable to
         my.zone:                                  # We've defined a new zone in here
           type: master
-          file: example.com.txt                   # Optional: specify the zone file to be used for this view.
+          file: example.com.txt                   # Optional: specify the zone file to be used for this view,
                                                   # otherwise it will default to the file matching the name of the zone that you
-                                                  # specify here.
+                                                  # specify here (which must match a zone under 'available_zones'.
                                                   # The file name must match what you have entered for 'file' in the zone under
                                                   # 'available_zones'.
                                                   # This allows you to define multiple views that serve the same zone, but
-                                                  # serve a different record set.
+                                                  # serve a different record set in each.
                                                   # If doing this, you need to configure the zones and their record sets
                                                   # underneath the 'available_zones' section.
           notify: False    
