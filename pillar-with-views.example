@@ -1,0 +1,89 @@
+bind:
+  configured_acls:                                # We have an internal ACL restricted to our
+    internal:                                     # private IP ranges.
+      - 127.0.0.0/8                               # In this case, an ACL for external isn't needed
+      - 10.0.0.0/8                                # as that view will be matched by 'any'.
+   
+  # Notice that there is no 'configured_zones' at this indentation level.
+  # That is because the bind service forces all zones to be served via a view when you are using
+  # views.
+  
+  configured_views:
+    external:
+      match_clients:
+        - any                                     # This will match anything, including the public internet.
+      configured_zones:
+        mydomain.com:                             # Notice that this value matches on both views.
+          type: master
+          file: external.mydomain.com.txt         # Specify the file to be used, which must match the file
+          recursion: yes                          # name of the zone below under available_zones.
+          notify: False
+          dnssec: False
+
+    internal:
+      match_clients:
+        - internal                                # This will match only our ACL named 'internal'.
+      configured_zones:
+        mydomain.com:                             # Same as above - both views will serve the same zone.
+          type: master
+          file: internal.mydomain.com.txt         # Different file - matches the internal zone below.
+          recursion: yes
+          notify: False
+          dnssec: False
+
+  available_zones:
+    external.mydomain.com:                        # Beginning of the external zone definition.
+      file: external.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
+                                                  # specified in the 'external' view.
+                                                  
+      soa:                                        # Declare the SOA RRs for the zone
+        ns: ns1.external.mydomain.com             # Required
+        contact: hostmaster@mydomain.com          # Required
+        serial: auto                              # Alternatively, autoupdate serial on each change
+        class: IN                                 # Optional. Default: IN
+        refresh: 8600                             # Optional. Default: 12h
+        retry: 900                                # Optional. Default: 15m
+        expiry: 86000                             # Optional. Default: 2w
+        nxdomain: 500                             # Optional. Default: 1m
+        ttl: 8600                                 # Optional. Not set by default
+      records:                                    # Records for the zone, grouped by type
+        A:
+          portal: 50.60.70.80
+          gateway: 50.60.70.81
+          directory: 50.60.70.82
+          ns1: 50.60.70.83
+          www: 50.60.70.84
+        NS:
+          '@':
+            - ns1
+        CNAME:
+          login: portal.mydomain.com.
+          dashboard: www.mydomain.com.
+          
+    internal.mydomain.com:                        # Beginning of the internal zone definition.
+      file: internal.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
+                                                  # specified in the 'internal' view.
+                                                  
+      soa:                                        # Declare the SOA RRs for the zone
+        ns: ns1.mydomain.com                      # Required
+        contact: hostmaster@mydomain.com          # Required
+        serial: auto                              # Alternatively, autoupdate serial on each change
+        class: IN                                 # Optional. Default: IN
+        refresh: 8600                             # Optional. Default: 12h
+        retry: 900                                # Optional. Default: 15m
+        expiry: 86000                             # Optional. Default: 2w
+        nxdomain: 500                             # Optional. Default: 1m
+        ttl: 8600                                 # Optional. Not set by default
+      records:                                    # Records for the zone, grouped by type
+        A:
+          portal: 10.0.0.10
+          gateway: 10.0.0.11
+          directory: 10.0.0.12
+          ns1: 10.0.0.13
+          www: 10.0.0.14
+        NS:
+          '@':
+            - ns1
+        CNAME:
+          login: portal.mydomain.com.
+          dashboard: www.mydomain.com.
