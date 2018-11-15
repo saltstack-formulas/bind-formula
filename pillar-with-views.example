@@ -20,6 +20,8 @@ bind:
           type: master
           file: external.mydomain.com.txt         # Specify the file to be used, which must match the file
           recursion: yes                          # name of the zone below under available_zones.
+                                                  # This filename also must match the corresponding zone name 
+                                                  # without the .txt extension (and be sure to use .txt as the extension).
           notify: False
           dnssec: False
 
@@ -30,6 +32,8 @@ bind:
         mydomain.com:                             # Same as above - both views will serve the same zone.
           type: master
           file: internal.mydomain.com.txt         # Different file - matches the internal zone below.
+                                                  # Again, this filename must match the corresponding zone name 
+                                                  # without the .txt extension (and be sure to use .txt as the extension).
           recursion: yes
           notify: False
           dnssec: False
