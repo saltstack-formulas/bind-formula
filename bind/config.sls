@@ -1,5 +1,5 @@
-{% from "bind/map.jinja" import map with context %}
-{% from "bind/reverse_zone.jinja" import generate_reverse %}
+{% from salt.file.join(tpldir, "map.jinja") import map with context %}
+{% from salt.file.join(tpldir, "reverse_zone.jinja") import generate_reverse %}
 
 {%- set key_directory = salt['pillar.get']('bind:lookup:key_directory', map.key_directory) %}
 {%- set key_algorithm = salt['pillar.get']('bind:lookup:key_algorithm', map.key_algorithm) %}
@@ -14,8 +14,16 @@
 {%- endif %}
 
 include:
-  - bind
+  - formula.bind
 
+########################################
+##
+## Create the BIND config
+## Commands are numbered only for easy reference - they are not executed in order!
+##
+########################################
+
+# 1. Create log directory (/var/log/named). Configured in map.jinja.
 {{ map.chroot_dir }}{{ map.log_dir }}:
   file.directory:
     - user: root
@@ -24,6 +32,7 @@ include:
     - require:
       - pkg: bind
 
+# 2. Trigger restarts via watches on /var/log/named/query.log and bind_key_directory
 bind_restart:
   service.running:
     - name: {{ map.service }}
@@ -32,6 +41,8 @@ bind_restart:
       - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
       - file: bind_key_directory
 
+# 3. Place /var/log/named/query.log (unless it exists already)
+# Require creation of the directory in command 1.
 {{ map.chroot_dir }}{{ map.log_dir }}/query.log:
   file.managed:
     - replace: False
@@ -41,6 +52,8 @@ bind_restart:
     - require:
       - file: {{ map.chroot_dir }}{{ map.log_dir }}
 
+# 4. Create /var/named directory. Configured in map.jinja.
+# Require bind pkg.installed (via the include at the top).
 named_directory:
   file.directory:
     - name: {{ map.named_directory }}
@@ -51,6 +64,8 @@ named_directory:
     - require:
       - pkg: bind
 
+# 5. Create a zones directory. Configured in map.jinja.
+# WE DON'T DO THIS.
 {% if map.get('zones_directory') %}
 bind_zones_directory:
   file.directory:
@@ -64,6 +79,14 @@ bind_zones_directory:
       - file: named_directory
 {% endif %}
 
+# 6. Create the bind config file /etc/named.conf
+# Uses salt://formula/bind/files/redhat/named.conf as the source template.
+# Uses jinja to template it, and passes the entire map dictionary as context.
+# View the context with: 
+#     salt -G role:dns state.show_sls formula.bind.config and look for the 'bind_config' ID.
+# Requires bind pkg.installed (via include at the top).
+# Triggers bind service reloads via the watch_in.
+# Adds an include declaration for the file created in command 7.
 bind_config:
   file.managed:
     - name: {{ map.config }}
@@ -83,10 +106,16 @@ bind_config:
     - watch_in:
       - service: bind
 
+# 7. Create /etc/named.conf.local. Configured in map.jinja
+# Works much the same as command 6.
+# Also passes zones_directory, which we don't have defined explicity, and gets set to 
+# map.named_directory (/var/named).
+# Requires bind pkg.installed (via include at the top) and query.log file.
+# Triggers bind service reloads via the watch_in. 
 bind_local_config:
   file.managed:
     - name: {{ map.local_config }}
-    - source: salt://bind/files/named.conf.local.jinja
+    - source: salt://formula/bind/files/named.conf.local.jinja
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -100,6 +129,9 @@ bind_local_config:
     - watch_in:
       - service: bind
 
+# 8. Create default config /etc/sysconfig/named
+# Pass map as jinja context.
+# Trigger bind service restarts via the watch_in.
 {% if grains['os_family'] not in ['Arch', 'FreeBSD']  %}
 bind_default_config:
   file.managed:
@@ -115,64 +147,12 @@ bind_default_config:
       - service: bind_restart
 {% endif %}
 
-{% if grains['os_family'] == 'Debian' %}
-bind_key_config:
-  file.managed:
-    - name: {{ map.key_config }}
-    - source: 'salt://{{ map.config_source_dir }}/named.conf.key'
-    - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
-    - require:
-      - pkg: bind
-    - watch_in:
-      - service: bind
-
-bind_options_config:
-  file.managed:
-    - name: {{ map.options_config }}
-    - source: 'salt://{{ map.config_source_dir }}/named.conf.options'
-    - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
-    - context:
-        key_directory: {{ map.key_directory }}
-        named_directory: {{ map.named_directory }}
-        zones_directory: {{ zones_directory }}
-    - require:
-      - pkg: bind
-    - watch_in:
-      - service: bind
-
-bind_default_zones:
-  file.managed:
-    - name: {{ map.default_zones_config }}
-    - source: 'salt://{{ map.config_source_dir }}/named.conf.default-zones'
-    - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
-    - require:
-      - pkg: bind
-    - watch_in:
-      - service: bind
-
-/etc/logrotate.d/{{ map.service }}:
-  file.managed:
-    - source: salt://{{ map.config_source_dir }}/logrotate_bind
-    - template: jinja
-    - user: root
-    - group: root
-    - context:
-        map: {{ map }}
-
+# 9. Set up extensive logging - configured in bind pillar.
 {%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
 bind_logging_config:
   file.managed:
     - name: {{ map.logging_config }}
-    - source: salt://bind/files/named.conf.logging.jinja
+    - source: salt://formula/bind/files/named.conf.logging.jinja
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -183,51 +163,44 @@ bind_logging_config:
       - pkg: bind
     - watch_in:
       - service: bind
+    - makedirs: True
 {%- endif %}
-{%- if salt['pillar.get']('bind:rndc_client', False) %}
-bind_rndc_client_config:
-  file.managed:
-    - name: {{ map.rndc_client_config }}
-    - source: salt://{{ map.config_source_dir }}/rndc.conf
-    - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '640') }}
-    - context:
-        map: {{ map }}
-    - require:
-      - pkg: bind
-{%- endif %}
-{% endif %}
 
+# 10. Many nested loops and if-blocks setting up the zone files and views.
+# This creates the zone files for the zones set up in available_zones and configured_zones (configured in the zones pillar).
 {%- set views = {False: salt['pillar.get']('bind', {})} %}{# process non-view zones in the same loop #}
 {%- do views.update(salt['pillar.get']('bind:configured_views', {})) %}
 {%- for view, view_data in views|dictsort %}
-{%- set dash_view = '-' + view if view else '' %}
-{% for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
-{%- set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
-{%- if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
-{%-   do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
-{%- endif %}
+{%-   set dash_view = '-' + view if view else '' %}
+{%    for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
+{%-     if 'file' in zone_data %}
+{%-       set file = zone_data.file %}
+{%-       set zone = zone|replace(".txt", "") %}
+{%-     else %}
+{%-       set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
+{%-     endif %}
+{%-     set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
+{%-     if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
+{%-       do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
+{%-     endif %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
 #}
-{%- set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
-{%- set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
-{% if file and zone_data['type'] == 'master' -%}
+{%-     set zone_source = 'salt://formula/bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
+{%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
+{%      if file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
-    - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
+    - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else '' }}
     - source: {{ zone_source }}
     - template: jinja
-    {% if zone_records != {} %}
+    {%   if zone_records != {} %}
     - context:
-      zone: zones{{ dash_view }}-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      records: {{ zone_records }}
-      include: False
-    {% endif %}
+        zone: zones{{ dash_view }}-{{ zone }}
+        soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+        records: {{ zone_records }}
+        include: False
+    {%   endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
@@ -255,9 +228,9 @@ zones{{ dash_view }}-{{ zone }}:
     - template: jinja
     {% if zone_records != {} %}
     - context:
-      zone: zones{{ dash_view }}-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
-      include: {{ zones_directory }}/{{ file }}.include
+        zone: zones{{ dash_view }}-{{ zone }}
+        soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") }}
+        include: {{ zones_directory }}/{{ file }}.include
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -270,6 +243,9 @@ zones{{ dash_view }}-{{ zone }}:
       - file: bind_zones_directory
       {% endif %}
 {% endif %}
+
+# 11. Sign the zone file. Configured in the bind and zones pillar files, and the map.jinja file.
+# Not sure of the hierarchy - turn off in all places if unwanted.
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed{{ dash_view }}-{{ zone }}:
   cmd.run:
@@ -278,8 +254,10 @@ signed{{ dash_view }}-{{ zone }}:
     - prereq:
       - file: zones{{ dash_view }}-{{ zone }}
 {% endif %}
+
 {% endif %}
 
+# 12. More DNSSEC stuff
 {% if zone_data['auto-dnssec'] is defined -%}
 zsk-{{ zone }}:
   cmd.run:
@@ -290,6 +268,7 @@ zsk-{{ zone }}:
     - require:
       - file: bind_key_directory
 
+# 13. More DNSSEC stuff
 ksk-{{ zone }}:
   cmd.run:
     - cwd: {{ key_directory }}
