@@ -5,8 +5,11 @@ bind:
       - 10.0.0.0/8                                # as that view will be matched by 'any'.
    
   # Notice that there is no 'configured_zones' at this indentation level.
-  # That is because the bind service forces all zones to be served via a view when you are using
-  # views.
+  # That is because when you are using views, the bind service forces all zones to be served via a view.
+  #
+  # Also note - any other zones defined in any other conf files will either need to be commented out, or
+  # also served via a view using a file include. If you have other zones being served outside of a view, bind will
+  # fail to start.
   
   configured_views:
     external:
