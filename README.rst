@@ -86,6 +86,13 @@ declared.
   `bind:available_zones:<zone>:file` should point to an existing zone file
   that will be **sourced** by the formula.
 
+Using Views
+-----------
+
+Using views introduces some restrictions by the BIND server in that once you have views defined, ALL of your zones have to be served via a view. You cannot have any zones defined outside of a view. 
+
+If you want multiple views to serve the same zone but with different record sets, follow the example in pillar-with-views.example to set this up. The key to this is the 'file' argument in the view configuration that allows you to set the view's configured_zone to a zone that you define underneath 'available_zones'. Without specifying this 'file' argument, your views cannot serve the same zone; they will instead serve a zone that matches the name of the view.
+          
 External zone files
 -------------------
 
