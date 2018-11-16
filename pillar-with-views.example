@@ -1,18 +1,19 @@
 bind:
   configured_acls:                                # We have an internal ACL restricted to our
-    internal:                                     # private IP ranges.
-      - 127.0.0.0/8                               # In this case, an ACL for external isn't needed
-      - 10.0.0.0/8                                # as that view will be matched by 'any'.
+    internal:                                     # private IP range.
+      - 10.0.0.0/8                                # In this case, an ACL for external isn't needed
+                                                  # as that view will be matched by 'any'.
    
   # Notice that there is no 'configured_zones' at this indentation level.
   # That is because when you are using views, the bind service forces all zones to be served via a view.
   #
   # Also note - any other zones defined in any other conf files will either need to be commented out, or
   # also served via a view using a file include. If you have other zones being served outside of a view, bind will
-  # fail to start.
+  # fail to start and give you an error message indicating this. You will likely find these externally-defined zones
+  # in /etc/named.conf and /etc/named.conf.local
   
   configured_views:
-    external:
+    external:                                     # A view called 'external' to match anything except the 'internal' ACL.
       match_clients:
         - any                                     # This will match anything, including the public internet.
       configured_zones:
@@ -25,7 +26,7 @@ bind:
           notify: False
           dnssec: False
 
-    internal:
+    internal:                                     # The 'internal' view that is restricted to the 'internal' ACL.
       match_clients:
         - internal                                # This will match only our ACL named 'internal'.
       configured_zones:
@@ -39,7 +40,7 @@ bind:
           dnssec: False
 
   available_zones:
-    external.mydomain.com:                        # Beginning of the external zone definition.
+    external.mydomain.com:                        # Beginning of the 'external' zone definition.
       file: external.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
                                                   # specified in the 'external' view.
                                                   
@@ -67,7 +68,7 @@ bind:
           login: portal.mydomain.com.
           dashboard: www.mydomain.com.
           
-    internal.mydomain.com:                        # Beginning of the internal zone definition.
+    internal.mydomain.com:                        # Beginning of the 'internal' zone definition.
       file: internal.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
                                                   # specified in the 'internal' view.
                                                   
@@ -83,8 +84,8 @@ bind:
         ttl: 8600                                 # Optional. Not set by default
       records:                                    # Records for the zone, grouped by type
         A:
-          portal: 10.0.0.10
-          gateway: 10.0.0.11
+          portal: 10.0.0.10                       # Here we serve all private IPs as opposed to the public IPs
+          gateway: 10.0.0.11                      # in the external zone.
           directory: 10.0.0.12
           ns1: 10.0.0.13
           www: 10.0.0.14
