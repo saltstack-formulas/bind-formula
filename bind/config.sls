@@ -207,7 +207,7 @@ bind_rndc_client_config:
 {%-   for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
 {%-     if 'file' in zone_data %}
 {%-       set file = zone_data.file %}
-{%-       set zone = zone|replace(".txt", "") %}
+{%-       set zone = file|replace(".txt", "") %}
 {%-     else %}
 {%-       set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
 {%-     endif %}
