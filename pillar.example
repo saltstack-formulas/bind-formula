@@ -290,7 +290,7 @@ bind:
                                                   # serve a different record set in each.
                                                   # If doing this, you need to configure the zones and their record sets
                                                   # underneath the 'available_zones' section.
-          notify: False    
+          notify: False
           update_policy:                          # A given update policy
             - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
 
