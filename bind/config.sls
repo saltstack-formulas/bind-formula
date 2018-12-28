@@ -206,11 +206,14 @@ bind_rndc_client_config:
 {%- for view, view_data in views|dictsort %}
 {%-   set dash_view = '-' + view if view else '' %}
 {%-   for zone, zone_data in view_data.get('configured_zones', {})|dictsort -%}
-{%-     if 'file' in zone_data %}
+{%-     set available_zone_file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
+{%-     if available_zone_file %}
+{%-       set file = available_zone_file %}
+{%-     elif 'file' in zone_data %}
 {%-       set file = zone_data.file %}
 {%-       set zone = file|replace(".txt", "") %}
 {%-     else %}
-{%-       set file = salt['pillar.get']("bind:available_zones:" + zone + ":file", false) %}
+{%-       set file = '' %}
 {%-     endif %}
 {%-     set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {%-     if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
@@ -221,7 +224,7 @@ bind_rndc_client_config:
 #}
 {%-     set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
-{%      if file and zone_data['type'] == 'master' -%}
+{%      if available_zone_file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
     - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
