@@ -168,7 +168,7 @@ bind:
     sub.domain.com:                                  # This zone will be copied from zones_source_dir
       file: sub.domain.com                           # You can optionally specify name of a file here. 
       type: master                                   # Yo don't have define zone again in available_zones. 
-                                                     # This feature is backward compatibile and only available in debian
+                                                     # This feature is backward compatible and only available in debian
       notify: False                                  # if type master you need specify notify True/False
 
     sub2.domain.com:                                 
