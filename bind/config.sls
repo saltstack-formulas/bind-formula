@@ -330,6 +330,7 @@ zsk-{{ zone }}:
       {% if dynamic_zone %}
       - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
       {% endif %}
+      
 ksk-{{ zone }}:
   cmd.run:
     - cwd: {{ key_directory }}
