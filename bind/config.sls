@@ -99,6 +99,7 @@ bind_local_config:
       - file: {{ map.chroot_dir }}{{ map.log_dir }}/query.log
     - watch_in:
       - service: bind
+      - cmd: bind_checknamed_conf
 
 {% if grains['os_family'] not in ['Arch', 'FreeBSD']  %}
 bind_default_config:
@@ -113,6 +114,7 @@ bind_default_config:
         map: {{ map }}
     - watch_in:
       - service: bind_restart
+      - cmd: bind_checknamed_conf
 {% endif %}
 
 {%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
@@ -130,6 +132,7 @@ bind_logging_config:
       - pkg: bind
     - watch_in:
       - service: bind
+      - cmd: bind_checknamed_conf
 {%- endif %}
 
 {% if grains['os_family'] == 'Debian' %}
@@ -145,6 +148,7 @@ bind_key_config:
       - pkg: bind
     - watch_in:
       - service: bind
+      - cmd: bind_checknamed_conf
 
 bind_options_config:
   file.managed:
@@ -162,6 +166,7 @@ bind_options_config:
       - pkg: bind
     - watch_in:
       - service: bind
+      - cmd: bind_checknamed_conf
 
 bind_default_zones:
   file.managed:
@@ -173,6 +178,13 @@ bind_default_zones:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - require:
       - pkg: bind
+    - watch_in:
+      - service: bind
+      - cmd: bind_checknamed_conf
+
+bind_checknamed_conf:
+  cmd.run:
+    - name: named-checkconf {{ map.config }}
     - watch_in:
       - service: bind
 
@@ -216,11 +228,14 @@ bind_rndc_client_config:
 {%-     if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
 {%-       do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
 {%-     endif %}
+{%-     set dynamic_zone = zone_data.update_policy if 'update_policy' in zone_data else false %}
+
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
 #}
 {%-     set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
+
 {%      if file and zone_data['type'] == 'master' -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
   file.managed:
@@ -243,6 +258,11 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
       - file: named_directory
       {% if map.get('zones_directory') %}
       - file: bind_zones_directory
+      {% endif %}
+    - watch_in:
+      - cmd: checkzones{{ dash_view }}-{{ zone }}
+      {% if dynamic_zone %}
+      - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
       {% endif %}
 
 {% if serial_auto %}
@@ -270,11 +290,16 @@ zones{{ dash_view }}-{{ zone }}:
     - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
     - watch_in:
       - service: bind
+      - cmd: checkzones{{ dash_view }}-{{ zone }}
+      {% if dynamic_zone %}
+      - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
+      {% endif %}
     - require:
       - file: named_directory
       {% if map.get('zones_directory') %}
       - file: bind_zones_directory
       {% endif %}
+
 {% endif %}
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed{{ dash_view }}-{{ zone }}:
@@ -283,7 +308,12 @@ signed{{ dash_view }}-{{ zone }}:
     - name: zonesigner -zone {{ zone }} {{ file }}
     - prereq:
       - file: zones{{ dash_view }}-{{ zone }}
-{% endif %}
+    - watch_in:
+      - cmd: checkzones{{ dash_view }}-{{ zone }}
+      {% if dynamic_zone %}
+      - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
+      {% endif %}
+      {% endif %}
 {% endif %}
 
 {% if zone_data['auto-dnssec'] is defined -%}
@@ -295,8 +325,12 @@ zsk-{{ zone }}:
     - unless: "grep {{ key_flags.zsk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
     - require:
       - file: bind_key_directory
-
-ksk-{{ zone }}:
+    - watch_in:
+      - cmd: checkzones{{ dash_view }}-{{ zone }}
+      {% if dynamic_zone %}
+      - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
+      {% endif %}
+  ksk-{{ zone }}:
   cmd.run:
     - cwd: {{ key_directory }}
     - name: dnssec-keygen -f KSK -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
@@ -304,6 +338,26 @@ ksk-{{ zone }}:
     - unless: "grep {{ key_flags.ksk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
     - require:
       - file: bind_key_directory
+    - watch_in:
+      - cmd: checkzones{{ dash_view }}-{{ zone }}
+      {% if dynamic_zone %}
+      - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
+      {% endif %}
+{% endif %}
+
+checkzones{{ dash_view }}-{{ zone }}:
+  cmd.run:
+    - name: named-checkzone {{ zone }} {{ zones_directory }}/{{ file }}
+    - watch_in:
+      - service: bind
+
+{% if dynamic_zone %}
+# Only allowed on dynamic zones (= with update_policy)
+freeze-reload-thaw{{ dash_view }}-{{ zone }}:
+  cmd.run:
+    - name: rndc freeze {{ zone }} && rndc reload {{ zone }} && rndc thaw {{ zone }}
+    - require_in: # execute *before* bind reload.
+      - service: bind
 {% endif %}
 
 {% endfor %}
