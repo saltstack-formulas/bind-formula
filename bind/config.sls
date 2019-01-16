@@ -330,7 +330,7 @@ zsk-{{ zone }}:
       {% if dynamic_zone %}
       - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
       {% endif %}
-  ksk-{{ zone }}:
+ksk-{{ zone }}:
   cmd.run:
     - cwd: {{ key_directory }}
     - name: dnssec-keygen -f KSK -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
