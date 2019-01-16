@@ -313,7 +313,6 @@ signed{{ dash_view }}-{{ zone }}:
       {% if dynamic_zone %}
       - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
       {% endif %}
-      {% endif %}
 {% endif %}
 
 {% if zone_data['auto-dnssec'] is defined -%}
