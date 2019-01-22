@@ -301,6 +301,7 @@ zones{{ dash_view }}-{{ zone }}:
       {% endif %}
 
 {% endif %}
+
 {% if zone_data['dnssec'] is defined and zone_data['dnssec'] -%}
 signed{{ dash_view }}-{{ zone }}:
   cmd.run:
@@ -314,6 +315,7 @@ signed{{ dash_view }}-{{ zone }}:
       - cmd: freeze-reload-thaw{{ dash_view }}-{{ zone }}
       {% endif %}
 {% endif %}
+{% endif %} # zone_data = master
 
 {% if zone_data['auto-dnssec'] is defined -%}
 zsk-{{ zone }}:
