@@ -360,5 +360,7 @@ freeze-reload-thaw{{ dash_view }}-{{ zone }}:
       - service: bind
 {% endif %}
 
+{% endif %} # zone_data = master
+
 {% endfor %}
 {% endfor %}
