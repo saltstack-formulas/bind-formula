@@ -229,10 +229,10 @@ zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
     - template: jinja
     {% if zone_records != {} %}
     - context:
-      zone: zones{{ dash_view }}-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") | json }}
-      records: {{ zone_records | json }}
-      include: False
+        zone: zones{{ dash_view }}-{{ zone }}
+        soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") | json }}
+        records: {{ zone_records | json }}
+        include: False
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
@@ -261,9 +261,9 @@ zones{{ dash_view }}-{{ zone }}:
     - template: jinja
     {% if zone_records != {} %}
     - context:
-      zone: zones{{ dash_view }}-{{ zone }}
-      soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") | json }}
-      include: {{ zones_directory }}/{{ file }}.include
+        zone: zones{{ dash_view }}-{{ zone }}
+        soa: {{ salt['pillar.get']("bind:available_zones:" + zone + ":soa") | json }}
+        include: {{ zones_directory }}/{{ file }}.include
     {% endif %}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
