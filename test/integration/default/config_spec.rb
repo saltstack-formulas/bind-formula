@@ -147,7 +147,7 @@ control 'File ' + config + '.local' do
     # Match 100.51.198 reverse zone from pillar
     its('content') { should match /^zone\ "100\.51\.198\.in-addr\.arpa"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}\/100\.51\.198\.in-addr\.arpa";\n\ \ \n\ \ notify\ no;\n\};/ }
     # Match logging
-    its('content') { should match /^logging\ \{\n\ \ channel\ "querylog"\ {\n\ \ \ \ file\ "#{log_directory}\/query\.log";\n\ \ \ \ print-time\ yes;\n\ \ \};\n\ \ category\ queries\ \{\ querylog;\ \};\n\};/ }
+    its('content') { should_not match /^logging\ \{\n\ \ channel\ "querylog"\ {\n\ \ \ \ file\ "#{log_directory}\/query\.log";\n\ \ \ \ print-time\ yes;\n\ \ \};\n\ \ category\ queries\ \{\ querylog;\ \};\n\};/ }
     # Match acl1
     its('content') { should match /acl\ client1\ \{\n\ \ 127\.0\.0\.0\/8;\n\ \ 10\.20\.0\.0\/16;\n\};/ }
     # Match acl2

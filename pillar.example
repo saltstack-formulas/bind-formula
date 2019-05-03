@@ -28,7 +28,7 @@ bind:
     user: root                                    # File & Directory user
     group: named                                  # File & Directory group
     mode: 640                                     # File & Directory mode
-    enable_logging: true                          # Enable basic query logging in $log_dir/query.log
+    enable_query_log: true                        # Enable basic query logging in $log_dir/query.log
     use_extensive_logging:                        # Alternatively, enable much more extensive config for logging.
       channel:                                    # Partial example. For proposed settings please refer to
         default_log:                              # https://kb.isc.org/article/AA-01526/0/BIND-Logging-some-basic-recommendations.html

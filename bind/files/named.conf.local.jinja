@@ -134,7 +134,8 @@ view {{ view }} {
 
 {%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
 include "{{ map.logging_config }}";
-{% elif salt['pillar.get']('bind:config:enable_logging', False) %}
+{#- bind:config:enable_logging is deprecated. TODO: Remove the or part of the condition below after a while. #}
+{% elif salt['pillar.get']('bind:config:enable_query_log', False) or salt['pillar.get']('bind:config:enable_logging', False) %}
 logging {
   channel "querylog" {
     file "{{ map.log_dir }}/query.log";

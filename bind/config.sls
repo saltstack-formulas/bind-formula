@@ -83,6 +83,18 @@ bind_config:
     - watch_in:
       - service: bind
 
+{%- if salt['pillar.get']('bind:config:enable_logging') is not none %}
+bind_local_config_deprecated_logging:
+  test.show_notification:
+    - text: Pillar data contains enable_logging. This parameter is deprecated and has been renamed enable_query_log.
+{%- endif %}
+
+{%- if (salt['pillar.get']('bind:config:enable_logging') or salt['pillar.get']('bind:config:enable_query_log')) and salt['pillar.get']('bind:config:use_extensive_logging') %}
+bind_local_config_logging_extensive_fail:
+  test.fail_without_changes:
+    - name: Pillar data uses enable_logging/enable_query_log and use_extensive_logging. These are mutually exclusive.
+{%- endif %}
+
 bind_local_config:
   file.managed:
     - name: {{ map.local_config }}
