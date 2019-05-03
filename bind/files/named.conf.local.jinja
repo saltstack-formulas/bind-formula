@@ -132,10 +132,9 @@ view {{ view }} {
 };
 {%- endfor %}
 
-{%- if salt['pillar.get']('bind:config:enable_logging', True) %}
 {%- if salt['pillar.get']('bind:config:use_extensive_logging', False) %}
 include "{{ map.logging_config }}";
-{% else %}
+{% elif salt['pillar.get']('bind:config:enable_logging', False) %}
 logging {
   channel "querylog" {
     file "{{ map.log_dir }}/query.log";
@@ -143,7 +142,6 @@ logging {
   };
   category queries { querylog; };
 };
-{%- endif %}
 {%- endif %}
 
 {%- if salt['pillar.get']('bind:controls', False) %}
