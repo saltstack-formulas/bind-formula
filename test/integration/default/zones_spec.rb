@@ -27,6 +27,8 @@ when 'arch','redhat', 'centos', 'fedora'
   keys_mode       = '0755'
   conf_mode       = '0640'
   config          = '/etc/named.conf'
+when 'suse', 'opensuse'
+  zones_directory = nil   # not implemented
 end
 
 # Override log directory by OS
@@ -36,6 +38,8 @@ when 'arch', 'ubuntu'
 when 'redhat', 'centos', 'fedora'
   log_directory   = '/var/named/data'
 end
+
+if zones_directory
 
 # Test example.com zonefile
 control 'File ' + zones_directory + '/example.com' do
@@ -157,4 +161,7 @@ control 'File ' + zones_directory + '/100.51.198.in-addr.arpa.include' do
     its('content') { should match '6.100.51.198.in-addr.arpa. PTR mx1.example.net.' }
     its('content') { should match '7.100.51.198.in-addr.arpa. PTR mx1.example.net.' }
   end
+
+end
+
 end
