@@ -8,6 +8,8 @@ when 'arch'
   )
 when 'redhat', 'centos', 'fedora'
   os_packages = %w(bind)
+when 'suse', 'opensuse'
+  os_packages = %w(bind)
 when 'debian', 'ubuntu'
   os_packages = %w(
     bind9

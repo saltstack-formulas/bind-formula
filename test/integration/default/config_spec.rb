@@ -6,6 +6,7 @@ keys_user       = 'root'
 keys_group      = conf_group
 logs_user       = 'root'
 logs_group      = conf_group
+logs_mode       = '0775'
 named_directory = '/var/cache/bind'
 zones_directory = '/var/cache/bind/zones'
 keys_directory  = '/etc/bind/keys'
@@ -27,6 +28,20 @@ when 'arch','redhat', 'centos', 'fedora'
   keys_mode       = '0755'
   conf_mode       = '0640'
   config          = '/etc/named.conf'
+ when 'suse', 'opensuse'
+  conf_user       = 'root'
+  conf_group      = 'named'
+  logs_user       = 'root'
+  logs_group      = 'root'
+  logs_mode       = '0755'
+  keys_group      = 'root'
+  logs_group      = 'root'
+  named_directory = '/var/lib/named'
+  zones_directory = '/var/lib/named'
+  keys_directory  = '/etc/named.keys'
+  keys_mode       = '0755'
+  conf_mode       = '0640'
+  config          = '/etc/named.d/named.conf'
 end
 
 # Override log directory by OS
@@ -35,6 +50,8 @@ when 'arch', 'ubuntu'
   log_directory   = '/var/log/named'
 when 'redhat', 'centos', 'fedora'
   log_directory   = '/var/named/data'
+when 'suse', 'opensuse'
+  log_directory   = '/var/log'
 end
 
 # Check main config dir
@@ -63,7 +80,7 @@ control 'Directory ' + log_directory do
   describe directory(log_directory) do
     its('owner') { should eq logs_user }
     its('group') { should eq logs_group }
-    its('mode')  { should cmp '0775' }
+    its('mode')  { should cmp logs_mode }
   end
 end
 
