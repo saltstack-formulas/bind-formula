@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+---
 bind:
   configured_acls:
     client1:
@@ -8,15 +11,15 @@ bind:
   configured_zones:
     example.com:
       type: master
-      notify: False
+      notify: false
       update_policy:
         - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
     example.net:
       type: master
-      notify: False
+      notify: false
     example.org:
       type: slave
-      notify: False
+      notify: false
       masters:
         - 192.0.2.1
         - 192.0.2.2
@@ -25,7 +28,7 @@ bind:
       notify: false
     100.51.198.in-addr.arpa:
       type: master
-      notify: False
+      notify: false
   available_zones:
     example.net:
       file: example.net
@@ -111,4 +114,3 @@ bind:
         net: 198.51.100.0/24
         for_zones:
           - example.net
-

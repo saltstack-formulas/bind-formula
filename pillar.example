@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+---
 # Note - Each section beginning with 'bind:' below represents a different way you may configure
-         pillars for bind. When configuring your pillar(s), you may use any combination of subsections,
-         but salt will not merge sections with the same heading.
+#        pillars for bind. When configuring your pillar(s), you may use any combination of subsections,
+#        but salt will not merge sections with the same heading.
 
 
 ### Overrides for the defaults specified by ###
@@ -32,36 +35,36 @@ bind:
     use_extensive_logging:                        # Enable extensive config for logging. Partial example. For proposed settings please refer to
       channel:                                    # https://kb.isc.org/article/AA-01526/0/BIND-Logging-some-basic-recommendations.html
         default_log:
-          file: default                           
+          file: default
           size: '200m'                            # size of a individual file (default 20m)
           versions: '10'                          # how many files will be stored (default 3)
-          print-time: yes
-          print-category: yes
-          print-severity: yes
+          print-time: true
+          print-category: true
+          print-severity: true
           severity: info
         queries_log:
           file: queries
-          print-time: yes
-          print-category: yes
-          print-severity: yes
+          print-time: true
+          print-category: true
+          print-severity: true
           severity: info
         query-errors_log:
           file: query-errors
-          print-time: yes
-          print-category: yes
-          print-severity: yes
+          print-time: true
+          print-category: true
+          print-severity: true
           severity: dynamic
         default_syslog:
-          print-time: yes
-          print-category: yes
-          print-severity: yes
+          print-time: true
+          print-category: true
+          print-severity: true
           syslog: daemon
           severity: info
         default_debug:
           file: named.run
-          print-time: yes
-          print-category: yes
-          print-severity: yes
+          print-time: true
+          print-category: true
+          print-severity: true
           severity: info
       category:
         default:
@@ -99,21 +102,21 @@ bind:
                                                   # (ipv4: 4, ipv6: 6). Omitting this reverts to
                                                   # binds default of both.
 
-# Debian and FreeBSD based systems 
-    default_zones: True                           # If set to True, the default-zones configuration
-                                                  # will be enabled. Defaults to False.
+# Debian and FreeBSD based systems
+    default_zones: true                           # If set to true, the default-zones configuration
+                                                  # will be enabled. Defaults to false.
 
     includes:                                     # Include any additional configuration file(s) in
       - /some/additional/named.conf               # named.conf
 
-# Debian based systems optional configs 
+# Debian based systems optional configs
 bind:
   config:
     options:
       querylog: 'yes'                             # Enable query logs, by default is disabled in map.jinja (yes,no)
 
   rndc_client:                                       # Generate rndc.conf file it uses previously defined keys
-    options:                                         
+    options:
       default:
         server: localhost
         port: 953
@@ -127,7 +130,7 @@ bind:
         key: my_default_key
 
   controls:                                          # If you define controls then you also should configure rndc_client
-    local:                                           
+    local:
       enabled: true
       bind:
         address: 127.0.0.1
@@ -147,7 +150,7 @@ bind:
       keys:
         - core_dhcp
 
-  statistics:                                        # Enable statistics-channel 
+  statistics:                                        # Enable statistics-channel
     local:
       enabled: true
       bind:
@@ -166,38 +169,38 @@ bind:
 
   configured_zones:                                  # Debian based systems can have zones using only configured_zones
     sub.domain.com:                                  # This zone will be copied from zones_source_dir
-      file: sub.domain.com                           # You can optionally specify name of a file here. 
-      type: master                                   # Yo don't have define zone again in available_zones. 
+      file: sub.domain.com                           # You can optionally specify name of a file here.
+      type: master                                   # Yo don't have define zone again in available_zones.
                                                      # This feature is backward compatibile and only available in debian
-      notify: False                                  # if type master you need specify notify True/False
+      notify: false                                  # if type master you need specify notify true/false
 
-    sub2.domain.com:                                 
+    sub2.domain.com:
       file: sub2.domain.com
       type: master
-      notify: True
-      allow-query: 
+      notify: true
+      allow-query:
         - any
-      allow-transfer: 
+      allow-transfer:
         - my_net
       allow-update: 'none'
       also-notify:
         - 1.2.3.4
         - 1.2.3.3
-      zone-statistics: yes                           # Enable detailed statistics for zone. You need enable statistics first
+      zone-statistics: true                           # Enable detailed statistics for zone. You need enable statistics first
 
     test.zone.com:
       file: test.zone.com
       type: slave
-      notify: False
+      notify: false
       masters:
-        - my_dns_masters                             # You can specify masters by using name 
+        - my_dns_masters                             # You can specify masters by using name
 
     test.zone2.com:                                  # Zone definied in default style of this formula
-      type: slave                                    # You need specify all info inside available_zones 
-      notify: False
+      type: slave                                    # You need specify all info inside available_zones
+      notify: false
 
 
-  configured_masters:                                # Configure master dns 
+  configured_masters:                                # Configure master dns
     my_dns_masters:
       - 10.10.20.20
       - 10.10.30.30
@@ -210,13 +213,12 @@ bind:
         - 10.167.73.21
         - 10.174.60.44
 
-# End Debian based systems features 
+# End Debian based systems features
 
 # on SUSE include the forwarders.conf file generated by netconfig(8)
 bind:
   config:
-    include_forwarders: True
-
+    include_forwarders: true
 
 
 ### Keys, Zones, ACLs and Views             ###
@@ -228,7 +230,7 @@ bind:
   configured_zones:
     sub.domain.com:                               # First domain zone
       type: master                                # We're the master of this zone
-      notify: False                               # Don't notify any NS RRs of any changes to zone
+      notify: false                               # Don't notify any NS RRs of any changes to zone
       also-notify:                                # Do notify these IP addresses (pointless as
         - 1.1.1.1                                 # notify has been set to no)
         - 2.2.2.2                                 # If using views, do not define configured_zones
@@ -237,20 +239,20 @@ bind:
 
     sub.domain2.com:                              # Domain zone with DNSSEC
       type: master                                # We're the master of this zone
-      notify: False                               # Don't notify any NS RRs of any changes to zone
-      dnssec: True                                # Create and manage signed zonefile with zonesigner
+      notify: false                               # Don't notify any NS RRs of any changes to zone
+      dnssec: true                                # Create and manage signed zonefile with zonesigner
                                                   # You will have to install dnssec-tools by hand
                                                   # on many distributions
 
     sub.domain3.com:                              # Domain zone with DNSSEC
       type: master                                # We're the master of this zone
-      notify: False                               # Don't notify any NS RRs of any changes to zone
+      notify: false                               # Don't notify any NS RRs of any changes to zone
       auto-dnssec: 'maintain'                     # Bind will create and manage the signed zonefile
                                                   # itself, we only have to provide the clear zone
 
     1.168.192.in-addr.arpa:                       # Reverse lookup for local IPs
       type: master                                # As above
-      notify: False                               # As above
+      notify: false                               # As above
       allow-transfer:                             # As above
         - 1.1.1.1
         - 2.2.2.2
@@ -258,7 +260,7 @@ bind:
     dynamic.domain.com:                           # Our ddns zone
       type: master                                # As above
       allow-update: "key core_dhcp"               # Who we allow updates from (refers to above key)
-      notify: True                                # Notify NS RRs of changes
+      notify: true                                # Notify NS RRs of changes
 
     sub.anotherdomain.com:                        # Another domain zone
       type: forward                               # This time it's a forwarding zone
@@ -290,7 +292,7 @@ bind:
                                                   # serve a different record set in each.
                                                   # If doing this, you need to configure the zones and their record sets
                                                   # underneath the 'available_zones' section.
-          notify: False    
+          notify: false
           update_policy:                          # A given update policy
             - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
 
@@ -339,8 +341,6 @@ bind:
             - '"some_value"'
             - '"v=spf1 mx a ip4:1.2.3.4 ~all"'
           _dmarc: '"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; fo=1:d:s; adkim=r; aspf=r; pct=100; ri=86400"'
-
-
 
 
     3.2.1.in-addr.arpa:                           # auto-generated reverse zone
