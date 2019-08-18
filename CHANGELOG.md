@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.18.1](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.0...v0.18.1) (2019-08-18)
+
+
+### Bug Fixes
+
+* **tests:** move to controls sub-directory ([74bbc5b](https://github.com/saltstack-formulas/bind-formula/commit/74bbc5b))
+
+
+### Continuous Integration
+
+* **travis:** re-enable `fedora` ([4a6ac4e](https://github.com/saltstack-formulas/bind-formula/commit/4a6ac4e))
+
 # [0.18.0](https://github.com/saltstack-formulas/bind-formula/compare/v0.17.0...v0.18.0) (2019-08-17)
 
 
