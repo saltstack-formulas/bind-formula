@@ -17,7 +17,7 @@ config          = '/etc/bind/named.conf'
 
 # Override by OS
 case os[:name]
-when 'arch','redhat', 'centos', 'fedora'
+when 'arch','redhat', 'centos', 'fedora', 'amazon'
   conf_user       = 'named'
   conf_group      = 'named'
   keys_group      = 'root'
@@ -48,7 +48,7 @@ end
 case os[:name]
 when 'arch', 'ubuntu'
   log_directory   = '/var/log/named'
-when 'redhat', 'centos', 'fedora'
+when 'redhat', 'centos', 'fedora', 'amazon'
   log_directory   = '/var/named/data'
 when 'suse', 'opensuse'
   log_directory   = '/var/log'
@@ -101,7 +101,7 @@ end
 # RHEL: Doesn't use .options and has rfc1912.zones
 # Debian: Uses .options
 case os[:name]
-when 'arch','redhat', 'centos', 'fedora'
+when 'arch','redhat', 'centos', 'fedora', 'amazon'
   control 'File ' + config do
     title 'should exist'
     describe file(config) do

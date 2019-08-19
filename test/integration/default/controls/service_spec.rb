@@ -1,6 +1,6 @@
 
 case os[:name]
-when 'arch','redhat', 'centos', 'fedora'
+when 'arch','redhat', 'centos', 'fedora', 'amazon'
   service = 'named'
 when 'suse', 'opensuse'
   service = 'named'
