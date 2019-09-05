@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.18.2](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.1...v0.18.2) (2019-09-05)
+
+
+### Continuous Integration
+
+* **kitchen+travis:** replace EOL pre-salted images ([3a4d4e8](https://github.com/saltstack-formulas/bind-formula/commit/3a4d4e8))
+
+
+### Tests
+
+* **inspec:** improve to work on `amazon` as well ([59684c6](https://github.com/saltstack-formulas/bind-formula/commit/59684c6))
+
 ## [0.18.1](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.0...v0.18.1) (2019-08-18)
 
 
