@@ -6,7 +6,7 @@ when 'arch'
     bind-tools
     dnssec-tools
   )
-when 'redhat', 'centos', 'fedora'
+when 'redhat', 'centos', 'fedora', 'amazon'
   os_packages = %w(bind)
 when 'suse', 'opensuse'
   os_packages = %w(bind)
