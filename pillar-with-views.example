@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+---
 bind:
   configured_acls:                                # We have an internal ACL restricted to our
     internal:                                     # private IP range.
       - 10.0.0.0/8                                # In this case, an ACL for external isn't needed
                                                   # as that view will be matched by 'any'.
-   
+
   # Notice that there is no 'configured_zones' at this indentation level.
   # That is because when you are using views, the bind service forces all zones to be served via a view.
   #
@@ -11,7 +14,7 @@ bind:
   # also served via a view using a file include. If you have other zones being served outside of a view, bind will
   # fail to start and give you an error message indicating this. You will likely find these externally-defined zones
   # in /etc/named.conf and /etc/named.conf.local
-  
+
   configured_views:
     external:                                     # A view called 'external' to match anything except the 'internal' ACL.
       match_clients:
@@ -20,11 +23,11 @@ bind:
         mydomain.com:                             # Notice that this value matches on both views.
           type: master
           file: external.mydomain.com.txt         # Specify the file to be used, which must match the file
-          recursion: yes                          # name of the zone below under available_zones.
-                                                  # This filename also must match the corresponding zone name 
+          recursion: 'yes'                        # name of the zone below under available_zones.
+                                                  # This filename also must match the corresponding zone name
                                                   # without the .txt extension (and be sure to use .txt as the extension).
-          notify: False
-          dnssec: False
+          notify: false
+          dnssec: false
 
     internal:                                     # The 'internal' view that is restricted to the 'internal' ACL.
       match_clients:
@@ -33,17 +36,17 @@ bind:
         mydomain.com:                             # Same as above - both views will serve the same zone.
           type: master
           file: internal.mydomain.com.txt         # Different file - matches the internal zone below.
-                                                  # Again, this filename must match the corresponding zone name 
+                                                  # Again, this filename must match the corresponding zone name
                                                   # without the .txt extension (and be sure to use .txt as the extension).
-          recursion: yes
-          notify: False
-          dnssec: False
+          recursion: 'yes'
+          notify: false
+          dnssec: false
 
   available_zones:
     external.mydomain.com:                        # Beginning of the 'external' zone definition.
       file: external.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
                                                   # specified in the 'external' view.
-                                                  
+
       soa:                                        # Declare the SOA RRs for the zone
         ns: ns1.external.mydomain.com             # Required
         contact: hostmaster@mydomain.com          # Required
@@ -67,11 +70,11 @@ bind:
         CNAME:
           login: portal.mydomain.com.
           dashboard: www.mydomain.com.
-          
+
     internal.mydomain.com:                        # Beginning of the 'internal' zone definition.
       file: internal.mydomain.com.txt             # The file in which to save this zone's record set - matches the file
                                                   # specified in the 'internal' view.
-                                                  
+
       soa:                                        # Declare the SOA RRs for the zone
         ns: ns1.mydomain.com                      # Required
         contact: hostmaster@mydomain.com          # Required
