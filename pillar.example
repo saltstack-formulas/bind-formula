@@ -23,7 +23,7 @@ bind:
   lookup:
     key_directory: '/etc/bind/keys'               # Key directory (needed to use auto-dnssec)
     key_algorithm: RSASHA256                      # Algorithm when using auto-dnssec
-    key_algorithm_field: 008                      # See http://www.bind9.net/dns-sec-algorithm-numbers
+    key_algorithm_field: '008'                    # See http://www.bind9.net/dns-sec-algorithm-numbers
     key_size: 4096                                # Key size
 
   config:
