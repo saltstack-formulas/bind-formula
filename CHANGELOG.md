@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.18.3](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.2...v0.18.3) (2019-10-07)
+
+
+### Bug Fixes
+
+* **pillar.example:** fix `yamllint` error ([eb29e00](https://github.com/saltstack-formulas/bind-formula/commit/eb29e00)), closes [/travis-ci.org/myii/bind-formula/builds/594704904#L211-L213](https://github.com//travis-ci.org/myii/bind-formula/builds/594704904/issues/L211-L213)
+
+
+### Continuous Integration
+
+* use `dist: bionic` & apply `opensuse-leap-15` SCP error workaround ([90abafa](https://github.com/saltstack-formulas/bind-formula/commit/90abafa))
+* **kitchen:** change `log_level` to `debug` instead of `info` ([e0be98a](https://github.com/saltstack-formulas/bind-formula/commit/e0be98a))
+* **kitchen:** install required packages to bootstrapped `opensuse` [skip ci] ([a5ad4c6](https://github.com/saltstack-formulas/bind-formula/commit/a5ad4c6))
+* **kitchen:** use bootstrapped `opensuse` images until `2019.2.2` [skip ci] ([0d02016](https://github.com/saltstack-formulas/bind-formula/commit/0d02016))
+* **platform:** add `arch-base-latest` (commented out for now) [skip ci] ([c091c74](https://github.com/saltstack-formulas/bind-formula/commit/c091c74))
+* **yamllint:** add rule `empty-values` & use new `yaml-files` setting ([9163726](https://github.com/saltstack-formulas/bind-formula/commit/9163726))
+
 ## [0.18.2](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.1...v0.18.2) (2019-09-05)
 
 
