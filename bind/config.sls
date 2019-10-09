@@ -214,7 +214,12 @@ bind_rndc_client_config:
 {%-     endif %}
 {%-     set zone_records = salt['pillar.get']('bind:available_zones:' + zone + ':records', {}) %}
 {%-     if salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse') %}
-{%-       do generate_reverse(zone_records, salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'), salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'), salt['pillar.get']('bind:available_zones', {})) %}
+{%-       do generate_reverse(
+            zone_records,
+            salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:net'),
+            salt['pillar.get']('bind:available_zones:' + zone + ':generate_reverse:for_zones'),
+            salt['pillar.get']('bind:available_zones', {})
+          ) %}
 {%-     endif %}
 {# If we define RRs in pillar, we use the internal template to generate the zone file
    otherwise, we fallback to the old behaviour and use the declared file
@@ -222,9 +227,9 @@ bind_rndc_client_config:
 {%-     set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
 {%      if file and zone_data['type'] == 'master' -%}
-zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else ''}}:
+zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else '' }}:
   file.managed:
-    - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else ''}}
+    - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else '' }}
     - source: {{ zone_source }}
     - template: jinja
     {% if zone_records != {} %}
@@ -292,7 +297,7 @@ zsk-{{ zone }}:
     - cwd: {{ key_directory }}
     - name: dnssec-keygen -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
     - runas: {{ map.user }}
-    - unless: "grep {{ key_flags.zsk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
+    - unless: "grep {{ key_flags.zsk }} {{ key_directory }}/K{{ zone }}.+{{ key_algorithm_field }}+*.key"
     - require:
       - file: bind_key_directory
 
@@ -301,7 +306,7 @@ ksk-{{ zone }}:
     - cwd: {{ key_directory }}
     - name: dnssec-keygen -f KSK -a {{ key_algorithm }} -b {{ key_size }} -n ZONE {{ zone }}
     - runas: {{ map.user }}
-    - unless: "grep {{ key_flags.ksk }} {{ key_directory }}/K{{zone}}.+{{ key_algorithm_field }}+*.key"
+    - unless: "grep {{ key_flags.ksk }} {{ key_directory }}/K{{ zone }}.+{{ key_algorithm_field }}+*.key"
     - require:
       - file: bind_key_directory
 {% endif %}
