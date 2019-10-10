@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.18.4](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.3...v0.18.4) (2019-10-10)
+
+
+### Bug Fixes
+
+* **config.sls:** fix `salt-lint` errors ([](https://github.com/saltstack-formulas/bind-formula/commit/920615a))
+* **named.conf.local.jinja:** fix `salt-lint` errors ([](https://github.com/saltstack-formulas/bind-formula/commit/67736a2))
+* **named.conf.logging.jinja:** fix `salt-lint` errors ([](https://github.com/saltstack-formulas/bind-formula/commit/f220886))
+
+
+### Continuous Integration
+
+* merge travis matrix, add `salt-lint` & `rubocop` to `lint` job ([](https://github.com/saltstack-formulas/bind-formula/commit/5883c09))
+
 ## [0.18.3](https://github.com/saltstack-formulas/bind-formula/compare/v0.18.2...v0.18.3) (2019-10-07)
 
 
