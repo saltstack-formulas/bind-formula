@@ -100,7 +100,7 @@ bind_local_config:
     - watch_in:
       - service: bind
 
-{% if grains['os_family'] not in ['Arch', 'FreeBSD']  %}
+{% if grains['os_family'] not in ['Arch', 'FreeBSD', 'Gentoo']  %}
 bind_default_config:
   file.managed:
     - name: {{ map.default_config }}
