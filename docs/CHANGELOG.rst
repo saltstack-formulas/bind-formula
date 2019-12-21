@@ -2,6 +2,52 @@
 Changelog
 =========
 
+`0.19.0 <https://github.com/saltstack-formulas/bind-formula/compare/v0.18.4...v0.19.0>`_ (2019-12-21)
+---------------------------------------------------------------------------------------------------------
+
+Bug Fixes
+^^^^^^^^^
+
+
+* **release.config.js:** use full commit hash in commit link [skip ci] (\ `adcdbb1 <https://github.com/saltstack-formulas/bind-formula/commit/adcdbb12b83c5f2b2eeb1dd7197783107d9f3ae1>`_\ )
+
+Continuous Integration
+^^^^^^^^^^^^^^^^^^^^^^
+
+
+* **gemfile:** restrict ``train`` gem version until upstream fix [skip ci] (\ `b7b0d65 <https://github.com/saltstack-formulas/bind-formula/commit/b7b0d655e1166a54ad5a182cf33f40df12afb2bc>`_\ )
+* **kitchen:** use ``debian-10-master-py3`` instead of ``develop`` [skip ci] (\ `c91fe2a <https://github.com/saltstack-formulas/bind-formula/commit/c91fe2a96b2c4f3d91d4d1a4996e37358cbe04ea>`_\ )
+* **kitchen:** use ``develop`` image until ``master`` is ready (\ ``amazonlinux``\ ) [skip ci] (\ `5afc27e <https://github.com/saltstack-formulas/bind-formula/commit/5afc27ec26fe676d99113958834398ab70f3a0dd>`_\ )
+* **kitchen+travis:** upgrade matrix after ``2019.2.2`` release [skip ci] (\ `6ba1dd5 <https://github.com/saltstack-formulas/bind-formula/commit/6ba1dd5262b567aad0b558fdcf81c566e2232c0f>`_\ )
+* **travis:** apply changes from build config validation [skip ci] (\ `1838174 <https://github.com/saltstack-formulas/bind-formula/commit/18381748c74eb54b6b7630e48ea1a9291e419889>`_\ )
+* **travis:** opt-in to ``dpl v2`` to complete build config validation [skip ci] (\ `577ad6d <https://github.com/saltstack-formulas/bind-formula/commit/577ad6db1ec2f5236dcf147011c67dfc567f448c>`_\ )
+* **travis:** quote pathspecs used with ``git ls-files`` [skip ci] (\ `88f9ff1 <https://github.com/saltstack-formulas/bind-formula/commit/88f9ff128f789b6ad9c5292681f1f8f70f725e69>`_\ )
+* **travis:** restrict ``semantic-release`` version until upstream fix (\ `5989bb9 <https://github.com/saltstack-formulas/bind-formula/commit/5989bb9a0b9112aa1fdc21ed3ec273a6a6976af9>`_\ )
+* **travis:** run ``shellcheck`` during lint job [skip ci] (\ `37c65de <https://github.com/saltstack-formulas/bind-formula/commit/37c65de5484c94ae031734663ac03d50c386066f>`_\ )
+* **travis:** update ``salt-lint`` config for ``v0.0.10`` [skip ci] (\ `4c6a882 <https://github.com/saltstack-formulas/bind-formula/commit/4c6a88243edb1fef2e5fba0ff16fd90e8514b88e>`_\ )
+* **travis:** use ``major.minor`` for ``semantic-release`` version (\ `66c4d9f <https://github.com/saltstack-formulas/bind-formula/commit/66c4d9fe7d3c56f214f6951efcdd9cb5faa88911>`_\ ), closes `/github.com/saltstack-formulas/bind-formula/issues/143#issuecomment-568197176 <https://github.com//github.com/saltstack-formulas/bind-formula/issues/143/issues/issuecomment-568197176>`_
+* **travis:** use build config validation (beta) [skip ci] (\ `681c345 <https://github.com/saltstack-formulas/bind-formula/commit/681c345e8b78e2d3115adde39cb2202c28dc230d>`_\ )
+* merge travis matrix, add ``salt-lint`` & ``rubocop`` to ``lint`` job (\ `7b23dbb <https://github.com/saltstack-formulas/bind-formula/commit/7b23dbbae026b0a8cc779f5ce84de92325454e8b>`_\ )
+
+Documentation
+^^^^^^^^^^^^^
+
+
+* **contributing:** remove to use org-level file instead [skip ci] (\ `9c11845 <https://github.com/saltstack-formulas/bind-formula/commit/9c11845a0997f7bdd6fbcae97e23262de78132a4>`_\ )
+* **readme:** update link to ``CONTRIBUTING`` [skip ci] (\ `ab6ea39 <https://github.com/saltstack-formulas/bind-formula/commit/ab6ea391d885fc2246db94219b59662c250c0854>`_\ )
+
+Features
+^^^^^^^^
+
+
+* **map.jinja:** add Gentoo support (\ `7415a9b <https://github.com/saltstack-formulas/bind-formula/commit/7415a9b0ce788d978c583499452fdcfc22328c42>`_\ )
+
+Performance Improvements
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+* **travis:** improve ``salt-lint`` invocation [skip ci] (\ `b63490c <https://github.com/saltstack-formulas/bind-formula/commit/b63490c23ddb9ccbdcfe02e85444f178441d02ad>`_\ )
+
 `0.18.4 <https://github.com/saltstack-formulas/bind-formula/compare/v0.18.3...v0.18.4>`_ (2019-10-10)
 ---------------------------------------------------------------------------------------------------------
 
