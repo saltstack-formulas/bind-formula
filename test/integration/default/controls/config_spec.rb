@@ -155,20 +155,20 @@ control 'File ' + config + '.local' do
     # the #{foo} is a ruby string expansion so we can use the variables
     # defined above
     # Match example.com zone from the pillar
-    its('content') { should match %r{^zone\ "example\.com"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}/example\.com";\n\ \ \n\ \ update-policy\ {\n\ \ \ \ grant\ core_dhcp\ name\ dns_entry_allowed_to_update\.\ ANY;\n\ \ \};\n\ \ notify\ no;\n\};} }
+    its('content') { should match /^zone\ "example\.com"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}\/example\.com";\n\ \ \n\ \ update-policy\ {\n\ \ \ \ grant\ core_dhcp\ name\ dns_entry_allowed_to_update\.\ ANY;\n\ \ \};\n\ \ notify\ no;\n\};/ }
     # Match example.net from pillar
-    its('content') { should match %r{^zone\ "example\.net"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}/example\.net";\n\ \ \n\ \ notify\ no;\n\};} }
+    its('content') { should match /^zone\ "example\.net"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}\/example\.net";\n\ \ \n\ \ notify\ no;\n\};/ }
     # Match example.org from pillar
-    its('content') { should match %r{^zone\ "example\.org"\ {\n\ \ type\ slave;\n\ \ file\ "#{zones_directory}/";\n\ \ \n\ \ notify\ no;\n\ \ masters\ \{\n\ \ \ \ 192\.0\.2\.1;\n\ \ \ \ 192\.0\.2\.2;\n\ \ \};\n\};} }
+    its('content') { should match /^zone\ "example\.org"\ {\n\ \ type\ slave;\n\ \ file\ "#{zones_directory}\/";\n\ \ \n\ \ notify\ no;\n\ \ masters\ \{\n\ \ \ \ 192\.0\.2\.1;\n\ \ \ \ 192\.0\.2\.2;\n\ \ \};\n\};/ }
     # Match 113.0.203 reverse zone from pillar
-    its('content') { should match %r{^zone\ "113\.0\.203\.in-addr\.arpa"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}/113\.0\.203\.in-addr\.arpa";\n\ \ \n\ \ notify\ no;\n\};} }
+    its('content') { should match /^zone\ "113\.0\.203\.in-addr\.arpa"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}\/113\.0\.203\.in-addr\.arpa";\n\ \ \n\ \ notify\ no;\n\};/ }
     # Match 100.51.198 reverse zone from pillar
-    its('content') { should match %r{^zone\ "100\.51\.198\.in-addr\.arpa"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}/100\.51\.198\.in-addr\.arpa";\n\ \ \n\ \ notify\ no;\n\};} }
+    its('content') { should match /^zone\ "100\.51\.198\.in-addr\.arpa"\ {\n\ \ type\ master;\n\ \ file\ "#{zones_directory}\/100\.51\.198\.in-addr\.arpa";\n\ \ \n\ \ notify\ no;\n\};/ }
     # Match logging
-    its('content') { should match %r{^logging\ \{\n\ \ channel\ "querylog"\ {\n\ \ \ \ file\ "#{log_directory}/query\.log";\n\ \ \ \ print-time\ yes;\n\ \ \};\n\ \ category\ queries\ \{\ querylog;\ \};\n\};} }
+    its('content') { should match /^logging\ \{\n\ \ channel\ "querylog"\ {\n\ \ \ \ file\ "#{log_directory}\/query\.log";\n\ \ \ \ print-time\ yes;\n\ \ \};\n\ \ category\ queries\ \{\ querylog;\ \};\n\};/ }
     # Match acl1
-    its('content') { should match %r{acl\ client1\ \{\n\ \ 127\.0\.0\.0/8;\n\ \ 10\.20\.0\.0/16;\n\};} }
+    its('content') { should match /acl\ client1\ \{\n\ \ 127\.0\.0\.0\/8;\n\ \ 10\.20\.0\.0\/16;\n\};/ }
     # Match acl2
-    its('content') { should match %r{^acl\ client2\ \{\n\ \ 10\.30\.0\.0/8;\n\};} }
+    its('content') { should match /^acl\ client2\ \{\n\ \ 10\.30\.0\.0\/8;\n\};/ }
   end
 end
