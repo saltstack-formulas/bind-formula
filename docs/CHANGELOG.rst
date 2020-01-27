@@ -2,6 +2,22 @@
 Changelog
 =========
 
+`0.19.1 <https://github.com/saltstack-formulas/bind-formula/compare/v0.19.0...v0.19.1>`_ (2020-01-27)
+---------------------------------------------------------------------------------------------------------
+
+Bug Fixes
+^^^^^^^^^
+
+
+* **default.sls:** fix subnet declaration (\ `c814779 <https://github.com/saltstack-formulas/bind-formula/commit/c8147797747f4c9b8d07d6310df750521f01ac82>`_\ ), closes `#144 <https://github.com/saltstack-formulas/bind-formula/issues/144>`_
+* **rubocop:** add fixes using ``rubocop -a --safe`` [skip ci] (\ `9d2966f <https://github.com/saltstack-formulas/bind-formula/commit/9d2966fd3226828614a9b551202fa076f048ce49>`_\ )
+
+Reverts
+^^^^^^^
+
+
+* **config_spec.rb:** do partial revert of ``rubocop -a --safe`` (\ `75810c0 <https://github.com/saltstack-formulas/bind-formula/commit/75810c07a71aa4b4ba74ed3c3facb1c5ee0ea6f8>`_\ )
+
 `0.19.0 <https://github.com/saltstack-formulas/bind-formula/compare/v0.18.4...v0.19.0>`_ (2019-12-21)
 ---------------------------------------------------------------------------------------------------------
 
