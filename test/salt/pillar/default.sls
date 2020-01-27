@@ -7,7 +7,8 @@ bind:
       - 127.0.0.0/8
       - 10.20.0.0/16
     client2:
-      - 10.30.0.0/8
+      - 10.0.0.0/8
+      - 10.30.0.0/16
   configured_zones:
     example.com:
       type: master

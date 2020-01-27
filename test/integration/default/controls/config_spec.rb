@@ -169,6 +169,6 @@ control 'File ' + config + '.local' do
     # Match acl1
     its('content') { should match /acl\ client1\ \{\n\ \ 127\.0\.0\.0\/8;\n\ \ 10\.20\.0\.0\/16;\n\};/ }
     # Match acl2
-    its('content') { should match /^acl\ client2\ \{\n\ \ 10\.30\.0\.0\/8;\n\};/ }
+    its('content') { should match /acl\ client2\ \{\n\ \ 10\.0\.0\.0\/8;\n\ \ 10\.30\.0\.0\/16;\n\};/ }
   end
 end
