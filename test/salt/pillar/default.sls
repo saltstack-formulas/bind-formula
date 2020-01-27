@@ -7,6 +7,7 @@ bind:
       - 127.0.0.0/8
       - 10.20.0.0/16
     client2:
+      # subnet declatation must have 0 for unmasked values
       - 10.0.0.0/8
       # or
       - 10.30.0.0/16
