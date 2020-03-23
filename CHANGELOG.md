@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.19.2](https://github.com/saltstack-formulas/bind-formula/compare/v0.19.1...v0.19.2) (2020-03-23)
+
+
+### Bug Fixes
+
+* **debian:** align Debian log directory with apparmor profile ([b5efc0b](https://github.com/saltstack-formulas/bind-formula/commit/b5efc0b9bdc24bad145c2e511a09dd976ef0a3ed))
+
+
+### Continuous Integration
+
+* **kitchen:** avoid using bootstrap for `master` instances [skip ci] ([292e495](https://github.com/saltstack-formulas/bind-formula/commit/292e495d0149599b53b588f9914f18366deac20f))
+
 ## [0.19.1](https://github.com/saltstack-formulas/bind-formula/compare/v0.19.0...v0.19.1) (2020-01-27)
 
 
