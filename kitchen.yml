@@ -312,6 +312,7 @@ suites:
       state_top:
         base:
           '*':
+            - bind._mapdata
             - bind
             - bind.config
       pillars:
