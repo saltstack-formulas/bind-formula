@@ -57,7 +57,7 @@ Install the bind package and start the bind service.
 Manage the bind configuration file.
 
 Example Pillar
-==============
+--------------
 
 .. code:: yaml
 
@@ -94,10 +94,10 @@ Example Pillar
 See *pillar.example* for a more complete example.
 
 Management of zone files
-========================
+------------------------
 
 `named.conf.local`
-------------------
+^^^^^^^^^^^^^^^^^^
 
 <zone> entries in `named.conf.local` will point to the file declared in
 
@@ -105,7 +105,7 @@ Management of zone files
 * `bind:available_zones:<zone>:file`
 
 zone files
-----------
+^^^^^^^^^^
 
 The `config.sls` state will  iterate on `bind:available_zones` and manage
 <zone> files for each <zone> that has bind:available_zones:<zone>:file`
@@ -118,21 +118,21 @@ declared.
   that will be **sourced** by the formula.
 
 Using Views
------------
+^^^^^^^^^^^
 
 Using views introduces some restrictions by the BIND server in that once you have views defined, ALL of your zones have to be served via a view. You cannot have any zones defined outside of a view. 
 
 If you want multiple views to serve the same zone but with different record sets, follow the example in pillar-with-views.example to set this up. The key to this is the 'file' argument in the view configuration that allows you to set the view's configured_zone to a zone that you define underneath 'available_zones'. Without specifying this 'file' argument, your views cannot serve the same zone; they will instead serve a zone that matches the name of the view.
           
 External zone files
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 To use an external tool to manage the <zone> file, simply declare the location
 of the zone file in  `bind:configured_zones:<zone>:file` and **don't** add any
 entry for the <zone> in  `bind:available_zones`
 
 DNSSEC
-======
+------
 
 The `bind` formula currently support two ways to enable DNSSEC:
 
@@ -187,12 +187,12 @@ On the slave server :
         - 192.168.1.1
 
 Notes
-=====
+-----
 
 * When using views all zones must be configured in views!
 
 Salt Compatibility
-==================
+------------------
 
 Tested with:
 
@@ -200,7 +200,7 @@ Tested with:
 * 2018.3.x
 
 OS Compatibility
-================
+----------------
 
 Tested with:
 
