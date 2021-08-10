@@ -173,6 +173,8 @@ bind:
       type: master                                   # Yo don't have define zone again in available_zones.
                                                      # This feature is backward compatibile and only available in debian
       notify: false                                  # if type master you need specify notify true/false
+      managed: true                                  # Set this to false if you don't want Salt to manage this zone file
+                                                     # If this parameter is set to true or is not set at all, the zone will be managed through salt
 
     sub2.domain.com:
       file: sub2.domain.com

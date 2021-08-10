@@ -226,7 +226,7 @@ bind_rndc_client_config:
 #}
 {%-     set zone_source = 'salt://bind/files/zone.jinja' if zone_records != {} else 'salt://' ~ map.zones_source_dir ~ '/' ~ file %}
 {%-     set serial_auto = salt['pillar.get']('bind:available_zones:' + zone + ':soa:serial', '') == 'auto' %}
-{%      if file and zone_data['type'] == 'master' -%}
+{%      if file and zone_data['type'] == 'master' and (zone_data['managed'] is not defined or zone_data['managed']) -%}
 zones{{ dash_view }}-{{ zone }}{{ '.include' if serial_auto else '' }}:
   file.managed:
     - name: {{ zones_directory }}/{{ file }}{{ '.include' if serial_auto else '' }}
