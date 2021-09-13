@@ -1,5 +1,49 @@
 # Changelog
 
+# [0.20.0](https://github.com/saltstack-formulas/bind-formula/compare/v0.19.2...v0.20.0) (2021-09-13)
+
+
+### Continuous Integration
+
+* **3003.1:** update inc. AlmaLinux, Rocky & `rst-lint` [skip ci] ([8082c7e](https://github.com/saltstack-formulas/bind-formula/commit/8082c7e6d48ccf4e5e66ee821fad4f57183d7524))
+* **commitlint:** ensure `upstream/master` uses main repo URL [skip ci] ([19d42a9](https://github.com/saltstack-formulas/bind-formula/commit/19d42a9776198e802215bbb38716b2295f6d18b3))
+* **gemfile.lock:** add to repo with updated `Gemfile` [skip ci] ([c15db2b](https://github.com/saltstack-formulas/bind-formula/commit/c15db2bd0cbb5b303b98a9ed7102b2b26aff9057))
+* **gemfile+lock:** use `ssf` customised `inspec` repo [skip ci] ([d46d646](https://github.com/saltstack-formulas/bind-formula/commit/d46d646fdc9a944a4dcecff245088b5b268da0ec))
+* **gitlab-ci:** use GitLab CI as Travis CI replacement ([c642234](https://github.com/saltstack-formulas/bind-formula/commit/c64223415906f733d7db1405468a43050d9b15ad))
+* **kitchen:** move `provisioner` block & update `run_command` [skip ci] ([0128f48](https://github.com/saltstack-formulas/bind-formula/commit/0128f48b0b468541db8359c98bcbcf9f52481ea2))
+* **kitchen+ci:** update with latest `3003.2` pre-salted images [skip ci] ([8c1a04c](https://github.com/saltstack-formulas/bind-formula/commit/8c1a04cfbf2ee683981cacf03e89d5e0b6926d4a))
+* add Debian 11 Bullseye & update `yamllint` configuration [skip ci] ([aa69b55](https://github.com/saltstack-formulas/bind-formula/commit/aa69b550eb6a6ec16e53bf7c28312cec1b6f28f8))
+* **gemfile+lock:** use `ssf` customised `kitchen-docker` repo [skip ci] ([0cdaad3](https://github.com/saltstack-formulas/bind-formula/commit/0cdaad33b9b8ca1fea0ab8210182d6ccbe5a6c75))
+* **kitchen:** use `saltimages` Docker Hub where available [skip ci] ([1b4cfcd](https://github.com/saltstack-formulas/bind-formula/commit/1b4cfcd1e6d19312f3e0802bc5c567ad6ea15013))
+* **kitchen+ci:** use latest pre-salted images (after CVE) [skip ci] ([9de203a](https://github.com/saltstack-formulas/bind-formula/commit/9de203a5e947b282c2c99e5c66161f553b8379f6))
+* **kitchen+gitlab:** adjust matrix to add `3003` [skip ci] ([9833cb6](https://github.com/saltstack-formulas/bind-formula/commit/9833cb616c026abce0b0eb11ea5620a060b0af32))
+* **kitchen+gitlab:** remove Ubuntu 16.04 & Fedora 32 (EOL) [skip ci] ([a3556b4](https://github.com/saltstack-formulas/bind-formula/commit/a3556b4cc4931a0062c89019bb22a11885328c57))
+* add `arch-master` to matrix and update `.travis.yml` [skip ci] ([73ee1c9](https://github.com/saltstack-formulas/bind-formula/commit/73ee1c9b9f7987c41d7f427e0a7decd8c42eaab8))
+* **gitlab-ci:** add `rubocop` linter (with `allow_failure`) [skip ci] ([db90981](https://github.com/saltstack-formulas/bind-formula/commit/db90981eed9fcc4511268c2cf7dd3e0be4241216))
+* **kitchen+gitlab-ci:** use latest pre-salted images [skip ci] ([df1f583](https://github.com/saltstack-formulas/bind-formula/commit/df1f58377c0497b7a5ef973df4596e4deb201a4a))
+* **kitchen+travis:** remove `master-py2-arch-base-latest` [skip ci] ([f1b306d](https://github.com/saltstack-formulas/bind-formula/commit/f1b306dbef9e4f6a83a789851d1230639226ec1c))
+* **pre-commit:** add to formula [skip ci] ([1b24859](https://github.com/saltstack-formulas/bind-formula/commit/1b248596e594fcfd6e0efbe08f73971fe141d879))
+* **pre-commit:** enable/disable `rstcheck` as relevant [skip ci] ([ffc60d2](https://github.com/saltstack-formulas/bind-formula/commit/ffc60d2e1f5ff7b34fecb443a1f8203cdca4b988))
+* **pre-commit:** finalise `rstcheck` configuration [skip ci] ([800a5e1](https://github.com/saltstack-formulas/bind-formula/commit/800a5e10db8576b5d058a63391e51c2bf1ae11c8))
+* **pre-commit:** update hook for `rubocop` [skip ci] ([182622d](https://github.com/saltstack-formulas/bind-formula/commit/182622d9e811f2bcdb1019da38c8863a66307c4a))
+* **travis:** add notifications => zulip [skip ci] ([51f0a8e](https://github.com/saltstack-formulas/bind-formula/commit/51f0a8e06e144054ecd5b76f8512dd080768e7d7))
+* **workflows/commitlint:** add to repo [skip ci] ([b202791](https://github.com/saltstack-formulas/bind-formula/commit/b202791a7cc78370a0a610193abf39cd544e67cd))
+
+
+### Documentation
+
+* **readme:** fix headings [skip ci] ([292b023](https://github.com/saltstack-formulas/bind-formula/commit/292b0232c1c544c4fc7b3a2bad07bdc026b0a1f0))
+
+
+### Features
+
+* **config.sls:** allow to not manage zone file ([2d06954](https://github.com/saltstack-formulas/bind-formula/commit/2d069544f6e5d8cbf5a6bee23d0e9618e09cd025))
+
+
+### Tests
+
+* standardise use of `share` suite & `_mapdata` state [skip ci] ([3cb26c0](https://github.com/saltstack-formulas/bind-formula/commit/3cb26c0a71cb99b88ef1ce00747c4fe57d4a322f))
+
 ## [0.19.2](https://github.com/saltstack-formulas/bind-formula/compare/v0.19.1...v0.19.2) (2020-03-23)
 
 
