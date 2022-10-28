@@ -261,7 +261,9 @@ bind:
 
     dynamic.domain.com:                           # Our ddns zone
       type: master                                # As above
-      allow-update: "key core_dhcp"               # Who we allow updates from (refers to above key)
+      allow-update:
+        - "key core_dhcp"                         # Who we allow updates, could be a string or an array
+        - "key other_dhcp"
       notify: true                                # Notify NS RRs of changes
 
     sub.anotherdomain.com:                        # Another domain zone

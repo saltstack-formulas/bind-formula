@@ -46,7 +46,12 @@ zone "{{ key }}" {
   inline-signing yes;
   {%- endif %}
   {%- if args['allow-update'] is defined %}
-  allow-update { {{ args['allow-update'] }}; };
+  {%- if args['allow-update'] is string %}
+  {%- set allow_update = [args['allow-update']] %}
+  {%- else %}
+  {%- set allow_update = args['allow-update'] %}
+  {%- endif %}
+  allow-update { {{ allow_update | join('; ') }}; };
   {%- endif %}
   {%- if args.update_policy is defined %}
   update-policy {
