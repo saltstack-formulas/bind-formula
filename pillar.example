@@ -9,6 +9,9 @@
 ### Overrides for the defaults specified by ###
 ### map.jinja                               ###
 bind:
+  logrotate:
+    postrotate_script: >
+      rndc reconfig &>/dev/null || true
   lookup:
     pkgs:
       - bind                                      # Need to install
