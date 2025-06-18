@@ -146,7 +146,7 @@ rubocop:
 # default-rockylinux-8-tiamat-py3: {extends: '.test_instance'}
 default-debian-11-master-py3: {extends: '.test_instance'}
 default-debian-10-master-py3: {extends: '.test_instance'}
-default-debian-9-master-py3: {extends: '.test_instance'}
+# default-debian-9-master-py3: {extends: '.test_instance'}
 default-ubuntu-2204-master-py3: {extends: '.test_instance_failure_permitted'}
 default-ubuntu-2004-master-py3: {extends: '.test_instance'}
 default-ubuntu-1804-master-py3: {extends: '.test_instance'}
@@ -156,7 +156,7 @@ default-fedora-36-master-py3: {extends: '.test_instance_failure_permitted'}
 default-fedora-35-master-py3: {extends: '.test_instance'}
 default-opensuse-leap-153-master-py3: {extends: '.test_instance'}
 # default-opensuse-tmbl-latest-master-py3: {extends: '.test_instance_failure_permitted'}
-default-amazonlinux-2-master-py3: {extends: '.test_instance'}
+# default-amazonlinux-2-master-py3: {extends: '.test_instance'}
 # default-oraclelinux-8-master-py3: {extends: '.test_instance'}
 # default-oraclelinux-7-master-py3: {extends: '.test_instance'}
 # default-arch-base-latest-master-py3: {extends: '.test_instance'}

@@ -6,4 +6,8 @@
 # ROOTDIR="/var/named/chroot"
 # KEYTAB_FILE="/dir/file"
 # DISABLE_ZONE_CHECKING
+{% set sysconfigfile = salt['pillar.get']('bind:lookup:config', False) -%}
+{% if sysconfigfile -%}
+NAMEDCONF={{ sysconfigfile }}
+{% endif -%}
 OPTIONS="{{ param|join(' ') }}"
